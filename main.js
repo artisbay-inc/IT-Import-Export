@@ -1,3 +1,24 @@
+// ===== THEME SWITCHER =====
+const THEME_STORAGE_KEY = "cf-theme";
+const THEMES = ["harbor", "desert", "steel", "slate"];
+
+function applyTheme(theme) {
+  if (!THEMES.includes(theme)) theme = "harbor";
+  document.documentElement.classList.add("theme-transitioning");
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem(THEME_STORAGE_KEY, theme);
+  document.querySelectorAll(".cl-theme-btn").forEach((btn) => {
+    btn.classList.toggle("is-active", btn.dataset.themeVal === theme);
+  });
+  setTimeout(() => document.documentElement.classList.remove("theme-transitioning"), 300);
+}
+
+document.querySelectorAll(".cl-theme-btn").forEach((btn) => {
+  btn.addEventListener("click", () => applyTheme(btn.dataset.themeVal));
+});
+
+applyTheme(localStorage.getItem(THEME_STORAGE_KEY) || "harbor");
+
 // ===== MOBILE NAV =====
 const menuBtn = document.querySelector(".cl-menu-btn");
 const nav = document.querySelector(".cl-nav");
@@ -22,50 +43,123 @@ if (menuBtn && nav) {
   if (navBackdrop) navBackdrop.addEventListener("click", () => setNavOpen(false));
 }
 
-// ===== VEHICLE STOCK FILTER =====
+// ===== VEHICLE STOCK FILTER (brand + body type + model, combined) =====
 const stockFilterBtns = document.querySelectorAll(".cl-stock-filter button");
 const carCards = document.querySelectorAll(".cl-car-card");
+const stockEmptyMsg = document.querySelector("#cl-stock-empty");
+const activeFilters = { brand: "all", type: "all", model: "all" };
+
+function setActivePill(group, value) {
+  document.querySelectorAll(`.cl-stock-filter button[data-filter-group="${group}"]`).forEach((b) => {
+    b.classList.toggle("is-active", b.dataset.filter === value);
+  });
+}
+
+function applyStockFilters() {
+  let visibleCount = 0;
+  carCards.forEach((card) => {
+    const brandMatch = activeFilters.brand === "all" || card.dataset.brand === activeFilters.brand;
+    const typeMatch = activeFilters.type === "all" || card.dataset.type === activeFilters.type;
+    const modelMatch = activeFilters.model === "all" || card.dataset.model === activeFilters.model;
+    const match = brandMatch && typeMatch && modelMatch;
+    card.classList.toggle("cl-hidden", !match);
+    if (match) visibleCount += 1;
+  });
+  if (stockEmptyMsg) stockEmptyMsg.hidden = visibleCount > 0;
+}
 
 stockFilterBtns.forEach((btn) => {
   btn.addEventListener("click", () => {
-    stockFilterBtns.forEach((b) => b.classList.remove("is-active"));
-    btn.classList.add("is-active");
-    const filter = btn.dataset.filter;
-    carCards.forEach((card) => {
-      const match = filter === "all" || card.dataset.type === filter;
-      card.classList.toggle("cl-hidden", !match);
-    });
+    const group = btn.dataset.filterGroup;
+    setActivePill(group, btn.dataset.filter);
+    activeFilters[group] = btn.dataset.filter;
+    if (group === "brand") {
+      activeFilters.model = "all";
+    }
+    applyStockFilters();
   });
 });
 
-// ===== CLEARANCE TIMELINE ESTIMATOR =====
-const destinationSelect = document.querySelector("#cl-destination");
-const cargoSelect = document.querySelector("#cl-cargo");
-const estimatorResult = document.querySelector("#cl-estimator-result");
-
-const baseDays = {
-  local: [1, 2],
-  windhoek: [2, 3],
-  botswana: [4, 6],
-  zambia: [5, 8],
-  angola: [5, 8],
-};
-
-const cargoAdjust = {
-  consolidated: 1,
-  fullcontainer: 0,
-  bonded: 2,
-};
-
-function updateEstimate() {
-  if (!destinationSelect || !cargoSelect || !estimatorResult) return;
-  const [minDays, maxDays] = baseDays[destinationSelect.value] || baseDays.local;
-  const adjust = cargoAdjust[cargoSelect.value] || 0;
-  estimatorResult.textContent = `Estimated timeline: ${minDays + adjust} to ${maxDays + adjust} working days`;
+if (carCards.length) {
+  const params = new URLSearchParams(window.location.search);
+  const paramBrand = params.get("brand");
+  const paramType = params.get("type");
+  const paramModel = params.get("model");
+  if (paramBrand) {
+    activeFilters.brand = paramBrand;
+    setActivePill("brand", paramBrand);
+  }
+  if (paramType) {
+    activeFilters.type = paramType;
+    setActivePill("type", paramType);
+  }
+  if (paramModel) activeFilters.model = paramModel;
+  applyStockFilters();
 }
 
-if (destinationSelect && cargoSelect) {
-  destinationSelect.addEventListener("change", updateEstimate);
-  cargoSelect.addEventListener("change", updateEstimate);
-  updateEstimate();
+// ===== SEARCH VEHICLES MODAL =====
+const VEHICLE_MODELS = {
+  toyota: [
+    { value: "hilux", label: "Hilux" },
+    { value: "landcruiser-prado", label: "Land Cruiser Prado" },
+    { value: "vitz", label: "Vitz" },
+    { value: "mark-x", label: "Mark X" },
+  ],
+  nissan: [{ value: "x-trail", label: "X-Trail" }],
+  honda: [{ value: "ballade", label: "Ballade" }],
+};
+
+const searchTriggers = document.querySelectorAll(".cl-search-trigger");
+const searchModal = document.querySelector("#cl-search-modal");
+const searchBackdrop = document.querySelector("#cl-search-backdrop");
+const searchClose = document.querySelector("#cl-search-close");
+const searchBrandSelect = document.querySelector("#cl-search-brand");
+const searchModelSelect = document.querySelector("#cl-search-model");
+const searchTypeSelect = document.querySelector("#cl-search-type");
+const searchSubmit = document.querySelector("#cl-search-submit");
+
+function setSearchModalOpen(isOpen) {
+  if (!searchModal) return;
+  searchModal.classList.toggle("visible", isOpen);
+  if (searchBackdrop) searchBackdrop.classList.toggle("visible", isOpen);
+  document.documentElement.classList.toggle("modal-open", isOpen);
+  document.body.classList.toggle("modal-open", isOpen);
+}
+
+if (searchTriggers.length && searchModal) {
+  searchTriggers.forEach((trigger) => {
+    trigger.addEventListener("click", () => setSearchModalOpen(true));
+  });
+  if (searchClose) searchClose.addEventListener("click", () => setSearchModalOpen(false));
+  if (searchBackdrop) searchBackdrop.addEventListener("click", () => setSearchModalOpen(false));
+
+  if (searchBrandSelect && searchModelSelect) {
+    searchBrandSelect.addEventListener("change", () => {
+      const brand = searchBrandSelect.value;
+      const models = VEHICLE_MODELS[brand];
+      if (!models) {
+        searchModelSelect.innerHTML = '<option value="all">Select a brand first</option>';
+        searchModelSelect.disabled = true;
+        return;
+      }
+      searchModelSelect.disabled = false;
+      searchModelSelect.innerHTML =
+        `<option value="all">All ${brand.charAt(0).toUpperCase() + brand.slice(1)} Models</option>` +
+        models.map((m) => `<option value="${m.value}">${m.label}</option>`).join("");
+    });
+  }
+
+  if (searchSubmit) {
+    searchSubmit.addEventListener("click", () => {
+      const brand = searchBrandSelect ? searchBrandSelect.value : "all";
+      const model = searchModelSelect && !searchModelSelect.disabled ? searchModelSelect.value : "all";
+      const type = searchTypeSelect ? searchTypeSelect.value : "all";
+      const params = new URLSearchParams();
+      if (brand !== "all") params.set("brand", brand);
+      if (model !== "all") params.set("model", model);
+      if (type !== "all") params.set("type", type);
+      const query = params.toString();
+      window.location.href = "vehicles.html" + (query ? `?${query}` : "");
+    });
+  }
 }

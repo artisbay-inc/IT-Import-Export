@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact &amp; Request a Quote — Clearing & Forwarding Co.</title>
+  <meta name="description" content="Request a customs clearing, freight forwarding, or delivery quote from Clearing & Forwarding Co. in Walvis Bay, Namibia." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="cl-header">
+    <div class="cl-shell cl-header-inner">
+      <a href="index.html" class="cl-logo" aria-label="Clearing and Forwarding Co. home">
+        <span class="cl-logo-it">C&amp;F</span>
+        <span class="cl-logo-word">
+          <span class="cl-logo-line1">CLEARING <em>&amp;</em></span>
+          <span class="cl-logo-line2">FORWARDING</span>
+        </span>
+        <svg class="cl-logo-arrow" viewBox="0 0 60 46" aria-hidden="true"><path d="M2 6 L58 21 L26 25 L14 44 Z"/></svg>
+      </a>
+      <nav class="cl-nav">
+        <a href="index.html">Home</a>
+        <a href="clearing.html">Clearing</a>
+        <a href="forwarding.html">Forwarding &amp; Delivery</a>
+        <a href="about.html">About</a>
+        <button type="button" class="cl-nav-cta cl-search-trigger">Search Vehicles</button>
+        <a href="contact.html" class="cl-nav-cta">Get a Quote</a>
+      </nav>
+      <div class="cl-theme-switcher" role="group" aria-label="Color theme">
+        <button type="button" class="cl-theme-btn cl-theme-btn-harbor is-active" data-theme-val="harbor" title="Harbor Navy"></button>
+        <button type="button" class="cl-theme-btn cl-theme-btn-desert" data-theme-val="desert" title="Desert Amber"></button>
+        <button type="button" class="cl-theme-btn cl-theme-btn-steel" data-theme-val="steel" title="Steel Teal"></button>
+        <button type="button" class="cl-theme-btn cl-theme-btn-slate" data-theme-val="slate" title="Slate Copper"></button>
+      </div>
+      <button type="button" class="cl-menu-btn" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <div class="cl-nav-backdrop" aria-hidden="true"></div>
+
+  <!-- ===== SEARCH VEHICLES MODAL ===== -->
+  <div class="cl-search-modal-backdrop" id="cl-search-backdrop" aria-hidden="true"></div>
+  <div class="cl-search-modal" id="cl-search-modal" role="dialog" aria-modal="true" aria-labelledby="cl-search-modal-title">
+    <button type="button" class="cl-search-modal-close" id="cl-search-close" aria-label="Close search">&times;</button>
+    <h2 id="cl-search-modal-title">Search Vehicles</h2>
+    <p class="cl-search-modal-sub">Find a vehicle by brand and model, then see what's available.</p>
+    <div class="cl-form-group">
+      <label for="cl-search-brand">Brand</label>
+      <select id="cl-search-brand">
+        <option value="all">All Brands</option>
+        <option value="toyota">Toyota</option>
+        <option value="nissan">Nissan</option>
+        <option value="honda">Honda</option>
+      </select>
+    </div>
+    <div class="cl-form-group">
+      <label for="cl-search-model">Model</label>
+      <select id="cl-search-model" disabled>
+        <option value="all">Select a brand first</option>
+      </select>
+    </div>
+    <div class="cl-form-group">
+      <label for="cl-search-type">Body Type</label>
+      <select id="cl-search-type">
+        <option value="all">All Types</option>
+        <option value="suv">SUV / 4x4</option>
+        <option value="sedan">Sedan</option>
+        <option value="hatchback">Hatchback</option>
+        <option value="bakkie">Bakkie</option>
+      </select>
+    </div>
+    <button type="button" class="btn btn-primary btn-full" id="cl-search-submit">Search Vehicles</button>
+  </div>
+
+  <section class="cl-page-banner">
+    <div class="cl-shell">
+      <p class="cl-eyebrow">Get Started</p>
+      <h1>Request a Clearance Quote</h1>
+      <p>Tell us about your shipment — cargo type, origin, and destination — and we'll respond with a clearance and delivery plan.</p>
+    </div>
+  </section>
+
+  <section class="cl-contact">
+    <div class="cl-shell cl-contact-grid">
+      <div>
+        <p class="cl-eyebrow">Reach Us Directly</p>
+        <h2>No Call Centres</h2>
+        <div class="cl-contact-details">
+          <div class="cl-contact-item">
+            <span class="cl-tile cl-tile-sm"><svg viewBox="0 0 24 24"><path d="M17 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Z"/><path d="M11 18h2"/></svg></span>
+            <a href="https://wa.me/264000000000">WhatsApp [Founder Name] (Founder &amp; CEO): +264 81 000 0000</a>
+          </div>
+          <div class="cl-contact-item">
+            <span class="cl-tile cl-tile-sm"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 6.5l8 6.5 8-6.5"/></svg></span>
+            <span>info@yourcompany.com</span>
+          </div>
+          <div class="cl-contact-item">
+            <span class="cl-tile cl-tile-sm"><svg viewBox="0 0 24 24"><path d="M17 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Z"/><path d="M11 18h2"/></svg></span>
+            <a href="https://wa.me/264000000001">[Accounts Name] (Accounts): +264 81 000 0001</a>
+          </div>
+          <div class="cl-contact-item">
+            <span class="cl-tile cl-tile-sm"><svg viewBox="0 0 24 24"><path d="M17 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Z"/><path d="M11 18h2"/></svg></span>
+            <a href="https://wa.me/264000000002">WhatsApp [Clearing Lead Name] (Clearing &amp; Customs): +264 81 000 0002</a>
+          </div>
+          <div class="cl-contact-item">
+            <span class="cl-tile cl-tile-sm"><svg viewBox="0 0 24 24"><path d="M4 10.5 12 6l8 4.5v7L12 22l-8-4.5v-7Z"/><path d="M4 10.5 12 15l8-4.5"/><path d="M12 15v7"/></svg></span>
+            <span>[Your Office Address], Walvis Bay, Namibia</span>
+          </div>
+        </div>
+      </div>
+      <form class="cl-form" onsubmit="return false;">
+        <div class="cl-form-row">
+          <div class="cl-form-group">
+            <label for="cl-contact-name">Full Name</label>
+            <input id="cl-contact-name" type="text" placeholder="Full name" required />
+          </div>
+          <div class="cl-form-group">
+            <label for="cl-company">Company <span class="cl-optional">(optional)</span></label>
+            <input id="cl-company" type="text" placeholder="Your company" />
+          </div>
+        </div>
+        <div class="cl-form-row">
+          <div class="cl-form-group">
+            <label for="cl-phone">Phone Number</label>
+            <input id="cl-phone" type="tel" placeholder="+264 81 000 0000" required />
+          </div>
+          <div class="cl-form-group">
+            <label for="cl-email">Email</label>
+            <input id="cl-email" type="email" placeholder="you@company.com" required />
+          </div>
+        </div>
+        <div class="cl-form-group">
+          <label for="cl-destination-2">Destination</label>
+          <select id="cl-destination-2" required>
+            <option value="">Select a destination</option>
+            <option>Swakopmund</option>
+            <option>Windhoek</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="cl-form-group">
+          <label for="cl-details">Shipment Details</label>
+          <textarea id="cl-details" rows="3" placeholder="Cargo type, container size, expected arrival date..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Send Quote Request</button>
+      </form>
+    </div>
+  </section>
+
+  <footer class="cl-footer">
+    <div class="cl-shell cl-footer-inner">
+      <p>Clearing & Forwarding Co. — Customs Clearing &amp; Freight Forwarding, Walvis Bay.</p>
+      <a href="index.html">Back to top</a>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

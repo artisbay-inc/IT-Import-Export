@@ -1,29 +1,29 @@
-# IT Import & Export CC — Website Demo
+# Clearing & Forwarding Co. — Website Template
 
-A frontend demo built for **IT Import & Export CC**, a customs clearing and freight
-forwarding agent based in Walvis Bay, Namibia, and a long-standing Artisbay partner.
+A reusable, multi-page frontend template for customs clearing, freight
+forwarding, and delivery businesses (with an optional vehicle sales section
+bolted on for agents who also import and sell used cars).
 
-## What's on the site
+All copy, contact details, and partner names on this site are placeholders —
+swap in your own branding, colors, and content before use.
 
-- Hero with a clearance-timeline estimator (destination × cargo type → working-day estimate)
-- Six core services: consolidation, customs clearing & documentation, duty & permit
-  preparation, nationwide delivery, cross-border delivery, bonded warehouse storage
-- Vehicle stock section — they also import and sell used cars
-- Trade corridor overview: Port of Walvis Bay → Windhoek → Botswana / Zambia / Angola
-- Team section with real contact links (WhatsApp, email) for Isak Titus (Founder & CEO),
-  Lucresia (Clearing & Customs), and Getrude (Accounts)
+## Pages
+
+- **Home** — minimalist photo hero, stats strip, trusted-by row, services overview
+- **Clearing** — customs clearing & documentation services
+- **Forwarding & Delivery** — consolidation, bonded storage, nationwide and
+  cross-border delivery, with a schematic coverage map
+- **Vehicles** — filterable stock grid (brand, body type) plus a header-level
+  "Search Vehicles" modal with cascading brand → model dropdowns
+- **About** — stats, trusted-by, why-us grid, team section
+- **Contact** — direct contact list and a quote-request form
+
+## Theming
+
+Multiple color themes are switchable from the header (persisted via
+`localStorage`) — see `main.js` and the `[data-theme]` blocks in `styles.css`.
 
 ## Viewing it
 
-Static site, no build step — just open `index.html` in a browser, or serve the folder
-with any static file server.
-
-## Status
-
-This is the frontend design only. It's meant for client review before the full
-package (booking system, consignment tracking, chatbot, hosting) is built out —
-see the "What's Included in the Full Package" section on the page itself.
-
-A genericized template version (client name/contacts replaced with placeholders,
-for reuse with future clearing & forwarding clients) lives separately at
-`F:\Demo Sites\Clearing-Forwarding-Demo`.
+Static site, no build step — open `index.html` in a browser, or serve the
+folder with any static file server.

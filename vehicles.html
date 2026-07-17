@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vehicles For Sale — Clearing & Forwarding Co.</title>
+  <meta name="description" content="Quality used vehicle imports for sale in Walvis Bay, Namibia — cleared and ready to drive. Filter by brand and body type." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="cl-header">
+    <div class="cl-shell cl-header-inner">
+      <a href="index.html" class="cl-logo" aria-label="Clearing and Forwarding Co. home">
+        <span class="cl-logo-it">C&amp;F</span>
+        <span class="cl-logo-word">
+          <span class="cl-logo-line1">CLEARING <em>&amp;</em></span>
+          <span class="cl-logo-line2">FORWARDING</span>
+        </span>
+        <svg class="cl-logo-arrow" viewBox="0 0 60 46" aria-hidden="true"><path d="M2 6 L58 21 L26 25 L14 44 Z"/></svg>
+      </a>
+      <nav class="cl-nav">
+        <a href="index.html">Home</a>
+        <a href="clearing.html">Clearing</a>
+        <a href="forwarding.html">Forwarding &amp; Delivery</a>
+        <a href="about.html">About</a>
+        <button type="button" class="cl-nav-cta cl-search-trigger">Search Vehicles</button>
+        <a href="contact.html" class="cl-nav-cta">Get a Quote</a>
+      </nav>
+      <div class="cl-theme-switcher" role="group" aria-label="Color theme">
+        <button type="button" class="cl-theme-btn cl-theme-btn-harbor is-active" data-theme-val="harbor" title="Harbor Navy"></button>
+        <button type="button" class="cl-theme-btn cl-theme-btn-desert" data-theme-val="desert" title="Desert Amber"></button>
+        <button type="button" class="cl-theme-btn cl-theme-btn-steel" data-theme-val="steel" title="Steel Teal"></button>
+        <button type="button" class="cl-theme-btn cl-theme-btn-slate" data-theme-val="slate" title="Slate Copper"></button>
+      </div>
+      <button type="button" class="cl-menu-btn" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <div class="cl-nav-backdrop" aria-hidden="true"></div>
+
+  <!-- ===== SEARCH VEHICLES MODAL ===== -->
+  <div class="cl-search-modal-backdrop" id="cl-search-backdrop" aria-hidden="true"></div>
+  <div class="cl-search-modal" id="cl-search-modal" role="dialog" aria-modal="true" aria-labelledby="cl-search-modal-title">
+    <button type="button" class="cl-search-modal-close" id="cl-search-close" aria-label="Close search">&times;</button>
+    <h2 id="cl-search-modal-title">Search Vehicles</h2>
+    <p class="cl-search-modal-sub">Find a vehicle by brand and model, then see what's available.</p>
+    <div class="cl-form-group">
+      <label for="cl-search-brand">Brand</label>
+      <select id="cl-search-brand">
+        <option value="all">All Brands</option>
+        <option value="toyota">Toyota</option>
+        <option value="nissan">Nissan</option>
+        <option value="honda">Honda</option>
+      </select>
+    </div>
+    <div class="cl-form-group">
+      <label for="cl-search-model">Model</label>
+      <select id="cl-search-model" disabled>
+        <option value="all">Select a brand first</option>
+      </select>
+    </div>
+    <div class="cl-form-group">
+      <label for="cl-search-type">Body Type</label>
+      <select id="cl-search-type">
+        <option value="all">All Types</option>
+        <option value="suv">SUV / 4x4</option>
+        <option value="sedan">Sedan</option>
+        <option value="hatchback">Hatchback</option>
+        <option value="bakkie">Bakkie</option>
+      </select>
+    </div>
+    <button type="button" class="btn btn-primary btn-full" id="cl-search-submit">Search Vehicles</button>
+  </div>
+
+  <section class="cl-page-banner">
+    <div class="cl-shell">
+      <p class="cl-eyebrow">Vehicle Sales</p>
+      <h1>Quality Used Imports, Ready To Drive</h1>
+      <p>We don't just clear cargo through the port — we import and sell quality used vehicles directly. Every unit passes through our own clearing process before it reaches you.</p>
+    </div>
+  </section>
+
+  <section class="cl-section">
+    <div class="cl-shell">
+      <div class="cl-stock-filters">
+        <div class="cl-filter-row">
+          <span class="cl-filter-row-label">Brand</span>
+          <div class="cl-stock-filter" role="group" aria-label="Filter by brand">
+            <button type="button" class="is-active" data-filter-group="brand" data-filter="all">All Brands</button>
+            <button type="button" data-filter-group="brand" data-filter="toyota">Toyota</button>
+            <button type="button" data-filter-group="brand" data-filter="nissan">Nissan</button>
+            <button type="button" data-filter-group="brand" data-filter="honda">Honda</button>
+          </div>
+        </div>
+        <div class="cl-filter-row">
+          <span class="cl-filter-row-label">Body Type</span>
+          <div class="cl-stock-filter" role="group" aria-label="Filter by body type">
+            <button type="button" class="is-active" data-filter-group="type" data-filter="all">All Types</button>
+            <button type="button" data-filter-group="type" data-filter="suv">SUV / 4x4</button>
+            <button type="button" data-filter-group="type" data-filter="sedan">Sedan</button>
+            <button type="button" data-filter-group="type" data-filter="hatchback">Hatchback</button>
+            <button type="button" data-filter-group="type" data-filter="bakkie">Bakkie</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cl-stock-grid">
+        <article class="cl-car-card" data-brand="toyota" data-type="bakkie" data-model="hilux">
+          <div class="cl-car-image">
+            <img src="https://images.unsplash.com/photo-1551830820-330a71b99659?w=700&q=80" alt="Toyota Hilux double-cab pickup" loading="lazy" />
+            <span class="cl-car-badge">Available</span>
+          </div>
+          <div class="cl-car-info">
+            <div class="cl-car-year">2017 · RHD · Toyota</div>
+            <h3>Toyota Hilux 2.4 D4D</h3>
+            <div class="cl-car-specs"><span>Diesel</span><span>Manual</span><span>4x4</span></div>
+            <div class="cl-car-footer"><span class="cl-car-price">N$ 289,000</span><span>Enquire →</span></div>
+          </div>
+        </article>
+
+        <article class="cl-car-card" data-brand="toyota" data-type="suv" data-model="landcruiser-prado">
+          <div class="cl-car-image">
+            <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=700&q=80" alt="Toyota Land Cruiser Prado SUV" loading="lazy" />
+            <span class="cl-car-badge">Available</span>
+          </div>
+          <div class="cl-car-info">
+            <div class="cl-car-year">2016 · RHD · Toyota</div>
+            <h3>Toyota Land Cruiser Prado</h3>
+            <div class="cl-car-specs"><span>2700cc</span><span>Automatic</span><span>4x4</span></div>
+            <div class="cl-car-footer"><span class="cl-car-price">N$ 345,000</span><span>Enquire →</span></div>
+          </div>
+        </article>
+
+        <article class="cl-car-card" data-brand="nissan" data-type="suv" data-model="x-trail">
+          <div class="cl-car-image">
+            <img src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=700&q=80" alt="Nissan X-Trail crossover SUV" loading="lazy" />
+            <span class="cl-car-badge reserved">Reserved</span>
+          </div>
+          <div class="cl-car-info">
+            <div class="cl-car-year">2015 · RHD · Nissan</div>
+            <h3>Nissan X-Trail</h3>
+            <div class="cl-car-specs"><span>2000cc</span><span>Automatic</span><span>AWD</span></div>
+            <div class="cl-car-footer"><span class="cl-car-price">N$ 198,000</span><span>Enquire →</span></div>
+          </div>
+        </article>
+
+        <article class="cl-car-card" data-brand="toyota" data-type="hatchback" data-model="vitz">
+          <div class="cl-car-image">
+            <img src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=700&q=80" alt="Toyota Vitz hatchback" loading="lazy" />
+            <span class="cl-car-badge">Available</span>
+          </div>
+          <div class="cl-car-info">
+            <div class="cl-car-year">2014 · RHD · Toyota</div>
+            <h3>Toyota Vitz</h3>
+            <div class="cl-car-specs"><span>1300cc</span><span>Automatic</span><span>Hatchback</span></div>
+            <div class="cl-car-footer"><span class="cl-car-price">N$ 98,000</span><span>Enquire →</span></div>
+          </div>
+        </article>
+
+        <article class="cl-car-card" data-brand="toyota" data-type="sedan">
+          <div class="cl-car-image">
+            <img src="https://images.unsplash.com/photo-1601362840469-51e4d8d58785?w=700&q=80" alt="Toyota Mark X sedan" loading="lazy" />
+            <span class="cl-car-badge">Available</span>
+          </div>
+          <div class="cl-car-info">
+            <div class="cl-car-year">2015 · RHD · Toyota</div>
+            <h3>Toyota Mark X</h3>
+            <div class="cl-car-specs"><span>2500cc</span><span>Automatic</span><span>Sedan</span></div>
+            <div class="cl-car-footer"><span class="cl-car-price">N$ 175,000</span><span>Enquire →</span></div>
+          </div>
+        </article>
+
+        <article class="cl-car-card" data-brand="honda" data-type="sedan">
+          <div class="cl-car-image">
+            <img src="https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=700&q=80" alt="Honda Ballade sedan" loading="lazy" />
+            <span class="cl-car-badge">Available</span>
+          </div>
+          <div class="cl-car-info">
+            <div class="cl-car-year">2018 · RHD · Honda</div>
+            <h3>Honda Ballade</h3>
+            <div class="cl-car-specs"><span>1500cc</span><span>Automatic</span><span>Sedan</span></div>
+            <div class="cl-car-footer"><span class="cl-car-price">N$ 155,000</span><span>Enquire →</span></div>
+          </div>
+        </article>
+      </div>
+
+      <p class="cl-stock-empty" id="cl-stock-empty" hidden>No vehicles match that combination right now — <a href="contact.html">ask us directly</a>, our full stock changes weekly.</p>
+
+      <div class="cl-stock-more">
+        <a href="contact.html" class="btn btn-outline-dark">Ask About Full Stock List</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="cl-footer">
+    <div class="cl-shell cl-footer-inner">
+      <p>Clearing & Forwarding Co. — Customs Clearing &amp; Freight Forwarding, Walvis Bay.</p>
+      <a href="index.html">Back to top</a>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

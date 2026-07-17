@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Freight Forwarding &amp; Delivery — Clearing & Forwarding Co.</title>
+  <meta name="description" content="Freight forwarding and delivery out of Walvis Bay — consolidation, bonded storage, and nationwide plus cross-border delivery into Botswana, Zambia, and Angola." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="cl-header">
+    <div class="cl-shell cl-header-inner">
+      <a href="index.html" class="cl-logo" aria-label="Clearing and Forwarding Co. home">
+        <span class="cl-logo-it">C&amp;F</span>
+        <span class="cl-logo-word">
+          <span class="cl-logo-line1">CLEARING <em>&amp;</em></span>
+          <span class="cl-logo-line2">FORWARDING</span>
+        </span>
+        <svg class="cl-logo-arrow" viewBox="0 0 60 46" aria-hidden="true"><path d="M2 6 L58 21 L26 25 L14 44 Z"/></svg>
+      </a>
+      <nav class="cl-nav">
+        <a href="index.html">Home</a>
+        <a href="clearing.html">Clearing</a>
+        <a href="forwarding.html">Forwarding &amp; Delivery</a>
+        <a href="about.html">About</a>
+        <button type="button" class="cl-nav-cta cl-search-trigger">Search Vehicles</button>
+        <a href="contact.html" class="cl-nav-cta">Get a Quote</a>
+      </nav>
+      <div class="cl-theme-switcher" role="group" aria-label="Color theme">
+        <button type="button" class="cl-theme-btn cl-theme-btn-harbor is-active" data-theme-val="harbor" title="Harbor Navy"></button>
+        <button type="button" class="cl-theme-btn cl-theme-btn-desert" data-theme-val="desert" title="Desert Amber"></button>
+        <button type="button" class="cl-theme-btn cl-theme-btn-steel" data-theme-val="steel" title="Steel Teal"></button>
+        <button type="button" class="cl-theme-btn cl-theme-btn-slate" data-theme-val="slate" title="Slate Copper"></button>
+      </div>
+      <button type="button" class="cl-menu-btn" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <div class="cl-nav-backdrop" aria-hidden="true"></div>
+
+  <!-- ===== SEARCH VEHICLES MODAL ===== -->
+  <div class="cl-search-modal-backdrop" id="cl-search-backdrop" aria-hidden="true"></div>
+  <div class="cl-search-modal" id="cl-search-modal" role="dialog" aria-modal="true" aria-labelledby="cl-search-modal-title">
+    <button type="button" class="cl-search-modal-close" id="cl-search-close" aria-label="Close search">&times;</button>
+    <h2 id="cl-search-modal-title">Search Vehicles</h2>
+    <p class="cl-search-modal-sub">Find a vehicle by brand and model, then see what's available.</p>
+    <div class="cl-form-group">
+      <label for="cl-search-brand">Brand</label>
+      <select id="cl-search-brand">
+        <option value="all">All Brands</option>
+        <option value="toyota">Toyota</option>
+        <option value="nissan">Nissan</option>
+        <option value="honda">Honda</option>
+      </select>
+    </div>
+    <div class="cl-form-group">
+      <label for="cl-search-model">Model</label>
+      <select id="cl-search-model" disabled>
+        <option value="all">Select a brand first</option>
+      </select>
+    </div>
+    <div class="cl-form-group">
+      <label for="cl-search-type">Body Type</label>
+      <select id="cl-search-type">
+        <option value="all">All Types</option>
+        <option value="suv">SUV / 4x4</option>
+        <option value="sedan">Sedan</option>
+        <option value="hatchback">Hatchback</option>
+        <option value="bakkie">Bakkie</option>
+      </select>
+    </div>
+    <button type="button" class="btn btn-primary btn-full" id="cl-search-submit">Search Vehicles</button>
+  </div>
+
+  <section class="cl-page-banner">
+    <div class="cl-shell">
+      <p class="cl-eyebrow">Service</p>
+      <h1>Freight Forwarding &amp; Delivery</h1>
+      <p>We combine shipments from multiple customers into efficient loads, hold them securely in bonded storage, then move them nationwide or across the border — one team, start to finish.</p>
+    </div>
+  </section>
+
+  <section class="cl-section">
+    <div class="cl-shell">
+      <header class="cl-section-head">
+        <p class="cl-eyebrow">How It Works</p>
+        <h2>From Consolidated Load to Your Door</h2>
+      </header>
+      <div class="cl-service-grid">
+        <article class="cl-service-card">
+          <div class="cl-tile"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="7" height="7" rx="1"/><rect x="14" y="7" width="7" height="7" rx="1"/><rect x="8.5" y="14" width="7" height="7" rx="1"/></svg></div>
+          <h3>Cargo Consolidation</h3>
+          <p>Smaller shipments are grouped into shared containers, splitting freight cost across everyone on board.</p>
+        </article>
+        <article class="cl-service-card">
+          <div class="cl-tile"><svg viewBox="0 0 24 24"><path d="M4 21V10l8-6 8 6v11"/><path d="M4 21h16"/><rect x="9" y="13" width="6" height="8"/></svg></div>
+          <h3>Bonded Warehouse Storage</h3>
+          <p>Cargo held securely on-site for as long as clearance, consolidation, or onward transport requires.</p>
+        </article>
+        <article class="cl-service-card">
+          <div class="cl-tile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.4 2.6 3.7 5.8 3.7 9s-1.3 6.4-3.7 9c-2.4-2.6-3.7-5.8-3.7-9s1.3-6.4 3.7-9Z"/></svg></div>
+          <h3>Nationwide Delivery</h3>
+          <p>Scheduled delivery to Swakopmund, Windhoek, and destinations across Namibia.</p>
+        </article>
+        <article class="cl-service-card">
+          <div class="cl-tile"><svg viewBox="0 0 24 24"><path d="M4 19h16"/><path d="M6 19V9l6-5 6 5v10"/><path d="M10 19v-5h4v5"/></svg></div>
+          <h3>Cross-Border Delivery</h3>
+          <p>Direct border delivery into Botswana, Zambia, and Angola, with paperwork cleared in advance.</p>
+        </article>
+        <article class="cl-service-card">
+          <div class="cl-tile"><svg viewBox="0 0 24 24"><path d="M4 12h11M11 6l6 6-6 6"/><path d="M17 4h3v16h-3"/></svg></div>
+          <h3>Consignment Management</h3>
+          <p>One team tracks your cargo from vessel unloading through to final delivery — no handoff, no re-briefing.</p>
+        </article>
+        <article class="cl-service-card">
+          <div class="cl-tile"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3V2a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><path d="M8.5 12.5l2 2 4.5-4.5"/></svg></div>
+          <h3>Documentation Handling</h3>
+          <p>Bills of lading, packing lists, and certificates of origin filed and matched to every consignment.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cl-section cl-section-alt">
+    <div class="cl-shell cl-corridor-grid">
+      <div>
+        <p class="cl-eyebrow">Coverage Confidence</p>
+        <h2>One Port, Four Countries</h2>
+        <p class="cl-section-sub">Walvis Bay is Namibia's only deep-water port and one of the shortest routes to the sea for Southern Africa's landlocked economies. We move cargo from the quay straight into the corridor.</p>
+        <div class="cl-corridor-list">
+          <article><h3>Namibia</h3><p>Nationwide delivery — Walvis Bay, Swakopmund, Windhoek, and beyond.</p></article>
+          <article><h3>Botswana</h3><p>Border delivery with clearance paperwork handled in advance.</p></article>
+          <article><h3>Zambia</h3><p>Consignment management through to final cross-border delivery.</p></article>
+          <article><h3>Angola</h3><p>Northbound corridor delivery, coordinated end to end.</p></article>
+        </div>
+      </div>
+      <div class="cl-map-card" aria-label="Schematic coverage map: coastline at Walvis Bay with routes inland to Windhoek, Botswana, Zambia, and Angola">
+        <svg class="cl-map-land" viewBox="0 0 400 400" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0,400 Q50,340 80,335 A16,16 0 0 1 112,332 Q170,300 195,225 Q220,130 310,75 Q365,40 400,5 L400,400 Z" fill="#3a5a4a" opacity="0.55" />
+        </svg>
+        <div class="cl-map-grid"></div>
+        <svg class="cl-map-routes" viewBox="0 0 400 400" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <marker id="cl-arrow" markerWidth="9" markerHeight="9" refX="6" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="currentColor" />
+            </marker>
+          </defs>
+          <path class="cl-map-route" d="M96,340 Q150,300 198,252" marker-end="url(#cl-arrow)" />
+          <path class="cl-map-route" d="M96,340 Q210,320 318,262" marker-end="url(#cl-arrow)" />
+          <path class="cl-map-route" d="M96,340 Q180,230 293,132" marker-end="url(#cl-arrow)" />
+          <path class="cl-map-route" d="M96,340 Q110,190 158,97" marker-end="url(#cl-arrow)" />
+        </svg>
+        <span class="cl-map-point cl-map-point-origin cl-pt-walvisbay"><span class="cl-map-dot"></span>Walvis Bay</span>
+        <span class="cl-map-point cl-pt-windhoek"><span class="cl-map-dot"></span>Windhoek</span>
+        <span class="cl-map-point cl-pt-botswana"><span class="cl-map-dot"></span>Botswana</span>
+        <span class="cl-map-point cl-pt-zambia"><span class="cl-map-dot"></span>Zambia</span>
+        <span class="cl-map-point cl-pt-angola"><span class="cl-map-dot"></span>Angola</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cl-contact cl-cta-banner">
+    <div class="cl-shell">
+      <p class="cl-eyebrow">Get Started</p>
+      <h2>Consolidate and Move Your Next Shipment</h2>
+      <p>Tell us your volume, timeline, and destination — we'll plan the load and the route.</p>
+      <div class="cl-hero-actions cl-cta-actions">
+        <a href="contact.html" class="btn btn-primary">Request a Quote</a>
+        <a href="clearing.html" class="btn btn-tertiary">See Clearing</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="cl-footer">
+    <div class="cl-shell cl-footer-inner">
+      <p>Clearing & Forwarding Co. — Customs Clearing &amp; Freight Forwarding, Walvis Bay.</p>
+      <a href="index.html">Back to top</a>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
