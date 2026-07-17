@@ -1,3 +1,24 @@
+// ===== THEME SWITCHER =====
+const THEME_STORAGE_KEY = "cf-theme";
+const THEMES = ["harbor", "desert", "steel", "slate"];
+
+function applyTheme(theme) {
+  if (!THEMES.includes(theme)) theme = "harbor";
+  document.documentElement.classList.add("theme-transitioning");
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem(THEME_STORAGE_KEY, theme);
+  document.querySelectorAll(".cl-theme-btn").forEach((btn) => {
+    btn.classList.toggle("is-active", btn.dataset.themeVal === theme);
+  });
+  setTimeout(() => document.documentElement.classList.remove("theme-transitioning"), 300);
+}
+
+document.querySelectorAll(".cl-theme-btn").forEach((btn) => {
+  btn.addEventListener("click", () => applyTheme(btn.dataset.themeVal));
+});
+
+applyTheme(localStorage.getItem(THEME_STORAGE_KEY) || "harbor");
+
 // ===== MOBILE NAV =====
 const menuBtn = document.querySelector(".cl-menu-btn");
 const nav = document.querySelector(".cl-nav");

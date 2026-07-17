@@ -1,4 +1,7 @@
-/* ===== TOKENS ===== */
+/* ===== TOKENS =====
+   Four switchable themes (see .cl-theme-switcher / [data-theme] blocks
+   below) — each just redefines this token set, so every component keeps
+   working unchanged. */
 :root {
   --navy: #0b2440;
   --navy-2: #123055;
@@ -6,11 +9,70 @@
   --amber: #d98a3d;
   --amber-2: #f2b768;
   --sand: #f7f2ea;
+  --sand-2: #efe7d9;
+  --ink: #08182c;
   --text: #0b2440;
   --muted: rgba(11, 36, 64, 0.68);
   --line: rgba(11, 36, 64, 0.14);
   --card: #ffffff;
   --shadow: 0 12px 28px rgba(11, 36, 64, 0.1);
+  --on-accent: #241002;
+}
+
+[data-theme="desert"] {
+  --navy: #3a2416;
+  --navy-2: #4a2f1c;
+  --navy-3: #5c3d24;
+  --amber: #b9832f;
+  --amber-2: #e0ab5c;
+  --sand: #faf3e6;
+  --sand-2: #f1e3cd;
+  --ink: #241407;
+  --text: #3a2416;
+  --muted: rgba(58, 36, 22, 0.68);
+  --line: rgba(58, 36, 22, 0.14);
+  --card: #ffffff;
+  --shadow: 0 12px 28px rgba(58, 36, 22, 0.12);
+  --on-accent: #2a1400;
+}
+
+[data-theme="steel"] {
+  --navy: #0d2f38;
+  --navy-2: #123c47;
+  --navy-3: #1a4e5c;
+  --amber: #2f9db3;
+  --amber-2: #5fc4d6;
+  --sand: #eef6f7;
+  --sand-2: #e1eef0;
+  --ink: #081e24;
+  --text: #0d2f38;
+  --muted: rgba(13, 47, 56, 0.68);
+  --line: rgba(13, 47, 56, 0.14);
+  --card: #ffffff;
+  --shadow: 0 12px 28px rgba(13, 47, 56, 0.1);
+  --on-accent: #062024;
+}
+
+[data-theme="slate"] {
+  --navy: #1c1b1a;
+  --navy-2: #262422;
+  --navy-3: #34302c;
+  --amber: #b5502e;
+  --amber-2: #d97a4f;
+  --sand: #f5f2ef;
+  --sand-2: #ebe6e1;
+  --ink: #121110;
+  --text: #1c1b1a;
+  --muted: rgba(28, 27, 26, 0.65);
+  --line: rgba(28, 27, 26, 0.14);
+  --card: #ffffff;
+  --shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  --on-accent: #ffffff;
+}
+
+html { transition: none; }
+html.theme-transitioning, html.theme-transitioning * {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease !important;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -59,7 +121,7 @@ a { text-decoration: none; color: inherit; }
 
 .btn-primary {
   background: linear-gradient(135deg, var(--amber), var(--amber-2));
-  color: #241002;
+  color: var(--on-accent);
 }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(217, 138, 61, 0.35); }
 
@@ -145,7 +207,7 @@ a { text-decoration: none; color: inherit; }
 
 .cl-nav-cta {
   background: var(--amber);
-  color: #241002 !important;
+  color: var(--on-accent) !important;
   padding: 0.55rem 1rem;
   border-radius: 0.5rem;
   font-weight: 800 !important;
@@ -162,9 +224,33 @@ a { text-decoration: none; color: inherit; }
 }
 .cl-menu-btn span { display: block; width: 100%; height: 2px; background: #fff; margin: 0.22rem 0; }
 
+/* ===== THEME SWITCHER ===== */
+.cl-theme-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+.cl-theme-btn {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.cl-theme-btn:hover { transform: scale(1.15); }
+.cl-theme-btn.is-active { border-color: #fff; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25); }
+.cl-theme-btn-harbor { background: linear-gradient(135deg, #0b2440 50%, #d98a3d 50%); }
+.cl-theme-btn-desert { background: linear-gradient(135deg, #3a2416 50%, #b9832f 50%); }
+.cl-theme-btn-steel { background: linear-gradient(135deg, #0d2f38 50%, #2f9db3 50%); }
+.cl-theme-btn-slate { background: linear-gradient(135deg, #1c1b1a 50%, #b5502e 50%); }
+
 /* ===== DEMO NOTICE ===== */
 .cl-demo-notice {
-  background: #08182c;
+  background: var(--ink);
   color: rgba(255, 255, 255, 0.82);
   text-align: center;
   padding: 0.6rem 1.2rem;
@@ -177,7 +263,7 @@ a { text-decoration: none; color: inherit; }
 }
 .cl-demo-tag {
   background: var(--amber);
-  color: #241002;
+  color: var(--on-accent);
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.05em;
@@ -245,7 +331,7 @@ a { text-decoration: none; color: inherit; }
    Compact, consistent header for every non-home page — no photo, just
    the section identity and a one-line description. */
 .cl-page-banner {
-  background: linear-gradient(150deg, var(--navy) 0%, #0d2b4d 100%);
+  background: linear-gradient(150deg, var(--navy) 0%, var(--ink) 100%);
   padding: 3.2rem 0 2.6rem;
 }
 .cl-page-banner h1 {
@@ -283,7 +369,7 @@ a { text-decoration: none; color: inherit; }
 
 /* ===== SECTIONS ===== */
 .cl-section { padding: 4.5rem 0; }
-.cl-section-alt { background: #efe7d9; }
+.cl-section-alt { background: var(--sand-2); }
 
 .cl-section-head { max-width: 640px; margin-bottom: 2.2rem; }
 .cl-section-head h2 { font-size: clamp(1.7rem, 3vw, 2.4rem); margin: 0; }
@@ -413,6 +499,13 @@ a { text-decoration: none; color: inherit; }
   height: 100%;
   width: auto;
   object-fit: contain;
+}
+.cl-trusted-word {
+  font-weight: 800;
+  font-size: 0.88rem;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  white-space: nowrap;
 }
 
 /* ===== VEHICLE STOCK ===== */
@@ -812,7 +905,7 @@ a { text-decoration: none; color: inherit; }
 html.modal-open, body.modal-open { overflow: hidden; height: 100%; }
 
 /* ===== FOOTER ===== */
-.cl-footer { background: #081b34; padding: 1.3rem 0; }
+.cl-footer { background: var(--ink); padding: 1.3rem 0; }
 .cl-footer-inner {
   display: flex;
   justify-content: space-between;
@@ -837,6 +930,7 @@ html.modal-open, body.modal-open { overflow: hidden; height: 100%; }
 @media (max-width: 1100px) {
   .cl-nav { display: none; }
   .cl-menu-btn { display: flex; }
+  .cl-theme-switcher { margin-right: 0.6rem; }
 
   .cl-nav.open {
     display: flex;
