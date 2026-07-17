@@ -226,14 +226,15 @@ a { text-decoration: none; color: inherit; }
 }
 
 .cl-hero-name {
-  font-family: 'Fraunces', serif;
-  font-weight: 700;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 900;
   color: var(--navy);
-  font-size: clamp(2.8rem, 7vw, 5.6rem);
+  font-size: clamp(2.7rem, 6.2vw, 5rem);
   line-height: 1;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
 }
-.cl-hero-name em { color: var(--navy-3); font-style: normal; }
+.cl-hero-name em { color: var(--navy-3); font-style: normal; font-weight: 900; }
 
 .cl-hero-tagline {
   margin: 1.1rem 0 0;
