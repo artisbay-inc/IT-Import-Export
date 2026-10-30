@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Account — IT Import &amp; Export CC</title>
+  <meta name="description" content="Sign in to your IT Import &amp; Export account." />
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.v2.css" />
+  <script>/* Theme before first paint: saved choice, else the system setting. */
+  (function(){var t;try{t=localStorage.getItem('iti-theme');}catch(e){}if(t!=='light'&&t!=='dark')t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
+</head>
+<body>
+
+  <header class="cl-header">
+    <div class="cl-shell cl-header-inner">
+      <a href="index.html" class="cl-logo" aria-label="IT Import and Export CC home">
+        <img src="assets/it-import-export-logo.jpeg" alt="IT Import and Export logo" class="cl-logo-img" />
+      </a>
+      <nav class="cl-nav">
+        <a href="index.html">Home</a>
+        <a href="clearing.html">Clearing</a>
+        <a href="forwarding.html">Forwarding &amp; Delivery</a>
+        <a href="about.html">About</a>
+        <a href="vehicles.html">Vehicles</a>
+        <a href="account.html" class="cl-account-link">Sign in</a>
+        <a href="contact.html" class="cl-nav-cta">Get a Quote</a>
+      </nav>
+      <button type="button" class="cl-theme-toggle" aria-label="Switch light or dark theme" title="Light / dark"><svg class="cl-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.8A8.2 8.2 0 1 1 9.2 4a6.6 6.6 0 0 0 10.8 10.8Z"/></svg><svg class="cl-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></button>
+      <button type="button" class="cl-menu-btn" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <div class="cl-nav-backdrop" aria-hidden="true"></div>
+
+  <section class="cl-page-banner">
+    <div class="cl-shell">
+      <p class="cl-eyebrow">Your Account</p>
+      <h1 id="acct-title">Sign In</h1>
+      <p id="acct-sub">Sign in to see your quote requests and keep your details up to date.</p>
+    </div>
+  </section>
+
+  <section class="cl-section">
+    <div class="cl-shell">
+      <p class="cl-loading" id="acct-loading">Loading…</p>
+
+      <!-- Sign in -->
+      <div class="cl-auth" data-view="signin" hidden>
+        <form class="cl-form" id="signin-form" novalidate>
+          <h2>Sign in</h2>
+          <p class="cl-form-status" role="status" hidden></p>
+          <div class="cl-form-group">
+            <label for="signin-email">Email</label>
+            <input id="signin-email" type="email" autocomplete="email" required />
+          </div>
+          <div class="cl-form-group">
+            <label for="signin-password">Password</label>
+            <input id="signin-password" type="password" autocomplete="current-password" required />
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Sign in</button>
+          <div class="cl-form-links">
+            <button type="button" class="cl-linkbtn" data-go="forgot">Forgot password?</button>
+            <span>New here? <button type="button" class="cl-linkbtn" data-go="signup">Create an account</button></span>
+          </div>
+        </form>
+      </div>
+
+      <!-- Sign up -->
+      <div class="cl-auth" data-view="signup" hidden>
+        <form class="cl-form" id="signup-form" novalidate>
+          <h2>Create your account</h2>
+          <p class="cl-form-hint">Save your details for faster quotes and see every request you send us in one place.</p>
+          <p class="cl-form-status" role="status" hidden></p>
+          <div class="cl-form-group">
+            <label for="signup-name">Full Name</label>
+            <input id="signup-name" type="text" autocomplete="name" maxlength="100" required />
+          </div>
+          <div class="cl-form-group">
+            <label for="signup-email">Email</label>
+            <input id="signup-email" type="email" autocomplete="email" required />
+          </div>
+          <div class="cl-form-row">
+            <div class="cl-form-group">
+              <label for="signup-phone">Phone <span class="cl-optional">(optional)</span></label>
+              <input id="signup-phone" type="tel" autocomplete="tel" maxlength="40" />
+            </div>
+            <div class="cl-form-group">
+              <label for="signup-company">Company <span class="cl-optional">(optional)</span></label>
+              <input id="signup-company" type="text" autocomplete="organization" maxlength="120" />
+            </div>
+          </div>
+          <div class="cl-form-group">
+            <label for="signup-password">Password <span class="cl-optional">(8 characters or more)</span></label>
+            <input id="signup-password" type="password" autocomplete="new-password" minlength="8" required />
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Create account</button>
+          <div class="cl-form-links">
+            <span>Already have an account? <button type="button" class="cl-linkbtn" data-go="signin">Sign in</button></span>
+          </div>
+        </form>
+      </div>
+
+      <!-- Forgot password -->
+      <div class="cl-auth" data-view="forgot" hidden>
+        <form class="cl-form" id="forgot-form" novalidate>
+          <h2>Reset your password</h2>
+          <p class="cl-form-hint">Enter your email and we'll send you a link to choose a new password.</p>
+          <p class="cl-form-status" role="status" hidden></p>
+          <div class="cl-form-group">
+            <label for="forgot-email">Email</label>
+            <input id="forgot-email" type="email" autocomplete="email" required />
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Send reset link</button>
+          <div class="cl-form-links">
+            <button type="button" class="cl-linkbtn" data-go="signin">Back to sign in</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Reset password (from the emailed link) -->
+      <div class="cl-auth" data-view="reset" hidden>
+        <form class="cl-form" id="reset-form" novalidate>
+          <h2>Choose a new password</h2>
+          <p class="cl-form-status" role="status" hidden></p>
+          <div class="cl-form-group">
+            <label for="reset-password">New password <span class="cl-optional">(8 characters or more)</span></label>
+            <input id="reset-password" type="password" autocomplete="new-password" minlength="8" required />
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Save new password</button>
+          <div class="cl-form-links">
+            <button type="button" class="cl-linkbtn" data-go="signin">Back to sign in</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Profile -->
+      <div data-view="profile" hidden>
+        <div class="cl-account-bar">
+          <p>Signed in as <strong id="profile-email"></strong></p>
+          <div class="cl-account-actions">
+            <a href="admin.html" class="btn btn-outline" id="profile-admin-link" hidden>Open admin</a>
+            <a href="contact.html" class="btn btn-primary">Request a quote</a>
+            <button type="button" class="btn btn-outline" id="signout-btn">Sign out</button>
+          </div>
+        </div>
+
+        <div class="cl-account-grid">
+          <div class="cl-card">
+            <h2>Your details</h2>
+            <form class="cl-form-plain" id="profile-form" novalidate>
+              <p class="cl-form-status" role="status" hidden></p>
+              <div class="cl-form-group">
+                <label for="profile-name">Full Name</label>
+                <input id="profile-name" type="text" autocomplete="name" maxlength="100" required />
+              </div>
+              <div class="cl-form-row">
+                <div class="cl-form-group">
+                  <label for="profile-phone">Phone</label>
+                  <input id="profile-phone" type="tel" autocomplete="tel" maxlength="40" />
+                </div>
+                <div class="cl-form-group">
+                  <label for="profile-company">Company</label>
+                  <input id="profile-company" type="text" autocomplete="organization" maxlength="120" />
+                </div>
+              </div>
+              <div class="cl-form-row">
+                <div class="cl-form-group">
+                  <label for="profile-country">Country</label>
+                  <input id="profile-country" type="text" autocomplete="country-name" maxlength="80" />
+                </div>
+                <div class="cl-form-group">
+                  <label for="profile-city">City</label>
+                  <input id="profile-city" type="text" autocomplete="address-level2" maxlength="80" />
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">Save details</button>
+            </form>
+          </div>
+
+          <div class="cl-card">
+            <h2>Change password</h2>
+            <form class="cl-form-plain" id="password-form" novalidate>
+              <p class="cl-form-status" role="status" hidden></p>
+              <div class="cl-form-group">
+                <label for="password-current">Current password</label>
+                <input id="password-current" type="password" autocomplete="current-password" required />
+              </div>
+              <div class="cl-form-group">
+                <label for="password-new">New password <span class="cl-optional">(8 characters or more)</span></label>
+                <input id="password-new" type="password" autocomplete="new-password" minlength="8" required />
+              </div>
+              <button type="submit" class="btn btn-outline">Change password</button>
+            </form>
+          </div>
+
+          <div class="cl-card">
+            <h2>Your quote requests</h2>
+            <ul class="cl-list" id="profile-quotes"></ul>
+          </div>
+
+          <div class="cl-card">
+            <h2>Recent activity</h2>
+            <ul class="cl-list" id="profile-activity"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="cl-footer">
+    <div class="cl-shell cl-footer-inner">
+      <p>IT Import &amp; Export CC — Customs Clearing &amp; Freight Forwarding, Walvis Bay.</p>
+      <a href="index.html">Back to top</a>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+  <script src="assets/account.js"></script>
+</body>
+</html>

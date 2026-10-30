@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — IT Import &amp; Export CC</title>
+  <meta name="description" content="Admin back office." />
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.v2.css" />
+  <script>/* Theme before first paint: saved choice, else the system setting. */
+  (function(){var t;try{t=localStorage.getItem('iti-theme');}catch(e){}if(t!=='light'&&t!=='dark')t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
+</head>
+<body>
+
+  <header class="cl-header">
+    <div class="cl-shell cl-header-inner">
+      <a href="index.html" class="cl-logo" aria-label="IT Import and Export CC home">
+        <img src="assets/it-import-export-logo.jpeg" alt="IT Import and Export logo" class="cl-logo-img" />
+      </a>
+      <nav class="cl-nav">
+        <a href="index.html">Home</a>
+        <a href="clearing.html">Clearing</a>
+        <a href="forwarding.html">Forwarding &amp; Delivery</a>
+        <a href="about.html">About</a>
+        <a href="vehicles.html">Vehicles</a>
+        <a href="account.html" class="cl-account-link">Sign in</a>
+        <a href="contact.html" class="cl-nav-cta">Get a Quote</a>
+      </nav>
+      <button type="button" class="cl-theme-toggle" aria-label="Switch light or dark theme" title="Light / dark"><svg class="cl-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.8A8.2 8.2 0 1 1 9.2 4a6.6 6.6 0 0 0 10.8 10.8Z"/></svg><svg class="cl-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></button>
+      <button type="button" class="cl-menu-btn" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <div class="cl-nav-backdrop" aria-hidden="true"></div>
+
+  <section class="cl-page-banner">
+    <div class="cl-shell">
+      <p class="cl-eyebrow">Back Office</p>
+      <h1>Admin</h1>
+      <p id="admin-sub">Your customers, their quote requests and your notes, in one place.</p>
+    </div>
+  </section>
+
+  <section class="cl-section">
+    <div class="cl-shell">
+      <p class="cl-loading" id="admin-loading">Loading…</p>
+
+      <!-- Admin sign in -->
+      <div class="cl-auth" id="admin-signin" hidden>
+        <form class="cl-form" id="admin-signin-form" novalidate>
+          <h2>Admin sign in</h2>
+          <p class="cl-form-status" role="status" hidden></p>
+          <div class="cl-form-group">
+            <label for="admin-email">Email</label>
+            <input id="admin-email" type="email" autocomplete="username" required />
+          </div>
+          <div class="cl-form-group">
+            <label for="admin-password">Password</label>
+            <input id="admin-password" type="password" autocomplete="current-password" required />
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Sign in</button>
+          <div class="cl-form-links">
+            <a class="cl-linkbtn" href="account.html#forgot">Forgot password?</a>
+          </div>
+        </form>
+      </div>
+
+      <!-- Back office -->
+      <div id="admin-app" hidden>
+        <div class="cl-account-bar">
+          <div class="cl-tabs" role="tablist">
+            <button type="button" class="cl-tab is-active" data-tab="customers" role="tab">Customers</button>
+            <button type="button" class="cl-tab" data-tab="quotes" role="tab">Quote requests <span class="cl-tab-count" id="tab-quote-count" hidden></span></button>
+            <button type="button" class="cl-tab" data-tab="me" role="tab">My admin profile</button>
+          </div>
+          <div class="cl-account-actions">
+            <span class="cl-muted">Signed in as <strong id="admin-who"></strong></span>
+            <button type="button" class="btn btn-outline" id="admin-signout">Sign out</button>
+          </div>
+        </div>
+
+        <!-- Customers -->
+        <div data-panel="customers">
+          <div class="cl-stat-tiles">
+            <div class="cl-stat-tile"><strong id="stat-total">0</strong><span>Customers</span></div>
+            <div class="cl-stat-tile"><strong id="stat-new">0</strong><span>New this week</span></div>
+            <div class="cl-stat-tile"><strong id="stat-active">0</strong><span>Active this week</span></div>
+            <div class="cl-stat-tile"><strong id="stat-quotes">0</strong><span>Open quote requests</span></div>
+          </div>
+          <div class="cl-form-group cl-search">
+            <label for="customer-search">Search</label>
+            <input id="customer-search" type="search" placeholder="Name, email, phone, company or notes" />
+          </div>
+          <div class="cl-table" id="customer-table" role="table" aria-label="Customers"></div>
+        </div>
+
+        <!-- Quote requests -->
+        <div data-panel="quotes" hidden>
+          <div class="cl-quote-list" id="quote-list"></div>
+        </div>
+
+        <!-- Admin profile -->
+        <div data-panel="me" hidden>
+          <div class="cl-account-grid">
+            <div class="cl-card">
+              <h2>Your admin details</h2>
+              <form class="cl-form-plain" id="me-form" novalidate>
+                <p class="cl-form-status" role="status" hidden></p>
+                <div class="cl-form-group">
+                  <label for="me-name">Name</label>
+                  <input id="me-name" type="text" maxlength="100" required />
+                </div>
+                <div class="cl-form-group">
+                  <label for="me-email">Email <span class="cl-optional">(your sign-in)</span></label>
+                  <input id="me-email" type="email" autocomplete="username" required />
+                </div>
+                <div class="cl-form-group">
+                  <label for="me-phone">Phone</label>
+                  <input id="me-phone" type="tel" maxlength="40" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save details</button>
+              </form>
+            </div>
+            <div class="cl-card">
+              <h2>Change password</h2>
+              <form class="cl-form-plain" id="me-password-form" novalidate>
+                <p class="cl-form-status" role="status" hidden></p>
+                <div class="cl-form-group">
+                  <label for="me-current">Current password</label>
+                  <input id="me-current" type="password" autocomplete="current-password" required />
+                </div>
+                <div class="cl-form-group">
+                  <label for="me-new">New password <span class="cl-optional">(8 characters or more)</span></label>
+                  <input id="me-new" type="password" autocomplete="new-password" minlength="8" required />
+                </div>
+                <button type="submit" class="btn btn-outline">Change password</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Customer details drawer -->
+  <div class="cl-drawer-backdrop" id="drawer-backdrop" hidden></div>
+  <aside class="cl-drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-name" hidden>
+    <button type="button" class="cl-search-modal-close" id="drawer-close" aria-label="Close">&times;</button>
+    <h2 id="drawer-name"></h2>
+    <p class="cl-muted" id="drawer-meta"></p>
+
+    <h3>Details</h3>
+    <form class="cl-form-plain" id="drawer-form" novalidate>
+      <p class="cl-form-status" role="status" hidden></p>
+      <div class="cl-form-group">
+        <label for="d-name">Name</label>
+        <input id="d-name" type="text" maxlength="100" required />
+      </div>
+      <div class="cl-form-group">
+        <label>Email</label>
+        <a id="d-email" class="cl-drawer-link"></a>
+      </div>
+      <div class="cl-form-row">
+        <div class="cl-form-group">
+          <label for="d-phone">Phone</label>
+          <input id="d-phone" type="tel" maxlength="40" />
+        </div>
+        <div class="cl-form-group">
+          <label for="d-company">Company</label>
+          <input id="d-company" type="text" maxlength="120" />
+        </div>
+      </div>
+      <div class="cl-form-row">
+        <div class="cl-form-group">
+          <label for="d-country">Country</label>
+          <input id="d-country" type="text" maxlength="80" />
+        </div>
+        <div class="cl-form-group">
+          <label for="d-city">City</label>
+          <input id="d-city" type="text" maxlength="80" />
+        </div>
+      </div>
+      <button type="submit" class="btn btn-outline">Save details</button>
+    </form>
+
+    <h3>Notes</h3>
+    <form class="cl-form-plain" id="note-form" novalidate>
+      <p class="cl-form-status" role="status" hidden></p>
+      <div class="cl-form-group">
+        <label for="note-text" class="cl-sr">New note</label>
+        <textarea id="note-text" rows="2" maxlength="2000" placeholder="Add a private note about this customer" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Add note</button>
+    </form>
+    <ul class="cl-list" id="drawer-notes"></ul>
+
+    <h3>Quote requests</h3>
+    <ul class="cl-list" id="drawer-quotes"></ul>
+
+    <h3>Activity</h3>
+    <ul class="cl-list" id="drawer-activity"></ul>
+
+    <div class="cl-drawer-danger">
+      <button type="button" class="btn btn-danger" id="drawer-delete">Delete customer</button>
+    </div>
+  </aside>
+
+  <footer class="cl-footer">
+    <div class="cl-shell cl-footer-inner">
+      <p>IT Import &amp; Export CC — Customs Clearing &amp; Freight Forwarding, Walvis Bay.</p>
+      <a href="index.html">Back to top</a>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+  <script src="assets/admin.js"></script>
+</body>
+</html>

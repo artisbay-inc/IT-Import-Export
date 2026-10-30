@@ -152,3 +152,120 @@ if (searchTriggers.length && searchModal) {
     });
   }
 }
+
+// ===== CUSTOMER ACCOUNTS (api/index.php) =====
+// ITIE.session() resolves to the signed-in user or null; ITIE.post() sends an
+// action with the CSRF token and throws an Error with a readable message.
+const ITIE = (() => {
+  const API = "api/index.php";
+  let csrf = null;
+  let sessionRequest = null;
+
+  function session(refresh = false) {
+    if (!sessionRequest || refresh) {
+      sessionRequest = fetch(`${API}?action=session`, { credentials: "same-origin", cache: "no-store" })
+        .then((r) => r.json())
+        .then((d) => {
+          csrf = d.csrf || null;
+          return d.user || null;
+        })
+        .catch(() => null);
+    }
+    return sessionRequest;
+  }
+
+  async function post(action, data = {}) {
+    if (!csrf) await session();
+    let result;
+    try {
+      const r = await fetch(`${API}?action=${encodeURIComponent(action)}`, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf || "" },
+        body: JSON.stringify(data),
+      });
+      result = await r.json();
+    } catch (e) {
+      throw new Error("We couldn't reach the server. Please check your connection and try again.");
+    }
+    if (result.csrf) csrf = result.csrf;
+    if (!result.ok) throw new Error(result.error || "Something went wrong. Please try again.");
+    return result;
+  }
+
+  // Timestamps from the API are Unix seconds.
+  const date = (ts) => new Date(ts * 1000).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+  const dateTime = (ts) => new Date(ts * 1000).toLocaleString(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  function ago(ts) {
+    const days = Math.floor((Date.now() / 1000 - ts) / 86400);
+    if (days <= 0) return "Today";
+    if (days === 1) return "Yesterday";
+    return days < 30 ? `${days} days ago` : date(ts);
+  }
+
+  return { session, post, date, dateTime, ago };
+})();
+window.ITIE = ITIE;
+
+/** Shows a message in a form's .cl-form-status line. kind: "ok" | "error" | "" */
+function setFormStatus(form, message, kind = "") {
+  const el = form.querySelector(".cl-form-status");
+  if (!el) return;
+  el.textContent = message;
+  el.className = "cl-form-status" + (kind ? ` is-${kind}` : "");
+  el.hidden = !message;
+}
+window.setFormStatus = setFormStatus;
+
+// Header link: "Sign in", "My account" or "Admin". Pages call this again after signing in or out.
+function setAccountLink(user) {
+  document.querySelectorAll(".cl-account-link").forEach((link) => {
+    link.textContent = !user ? "Sign in" : user.role === "admin" ? "Admin" : "My account";
+    link.href = user && user.role === "admin" ? "admin.html" : "account.html";
+  });
+}
+window.setAccountLink = setAccountLink;
+ITIE.session().then(setAccountLink);
+
+// ===== QUOTE FORM =====
+const quoteForm = document.querySelector("#cl-quote-form");
+if (quoteForm) {
+  const val = (id) => quoteForm.querySelector(id).value.trim();
+
+  // Signed-in customers get their details filled in.
+  ITIE.session().then((user) => {
+    if (!user || user.role !== "customer") return;
+    const fill = (id, value) => {
+      const input = quoteForm.querySelector(id);
+      if (input && !input.value && value) input.value = value;
+    };
+    fill("#cl-contact-name", user.name);
+    fill("#cl-company", user.company);
+    fill("#cl-phone", user.phone);
+    fill("#cl-email", user.email);
+  });
+
+  quoteForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!quoteForm.reportValidity()) return;
+    const button = quoteForm.querySelector('button[type="submit"]');
+    button.disabled = true;
+    setFormStatus(quoteForm, "Sending…");
+    try {
+      const result = await ITIE.post("quote", {
+        name: val("#cl-contact-name"),
+        company: val("#cl-company"),
+        phone: val("#cl-phone"),
+        email: val("#cl-email"),
+        destination: val("#cl-destination-2"),
+        details: val("#cl-details"),
+      });
+      quoteForm.querySelector("#cl-details").value = "";
+      setFormStatus(quoteForm, result.message, "ok");
+    } catch (err) {
+      setFormStatus(quoteForm, err.message, "error");
+    } finally {
+      button.disabled = false;
+    }
+  });
+}
