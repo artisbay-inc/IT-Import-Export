@@ -137,7 +137,7 @@ switch ($action) {
             db()->prepare('DELETE FROM resets WHERE user_id = ? OR expires_at < ?')->execute([$user['id'], time()]);
             db()->prepare('INSERT INTO resets (token_hash, user_id, expires_at) VALUES (?, ?, ?)')
                 ->execute([hash('sha256', $token), $user['id'], time() + 3600]);
-            $link = rtrim(config()['site_url'], '/') . '/account.html#reset=' . $token;
+            $link = rtrim(config()['site_url'], '/') . '/account#reset=' . $token;
             send_mail($user['email'], 'Reset your password',
                 "Hello {$user['name']},\n\nUse this link within one hour to choose a new password:\n\n$link\n\n"
                 . "If you did not ask for this, you can ignore this email.\n\nIT Import & Export CC, Walvis Bay");
@@ -200,7 +200,7 @@ switch ($action) {
         if ($notify !== '') {
             send_mail($notify, "New quote request from $name",
                 "Name: $name\nCompany: $company\nPhone: $phone\nEmail: $email\nDestination: $destination\n\n$details\n\n"
-                . 'See all requests in the admin page: ' . rtrim(config()['site_url'], '/') . '/admin.html',
+                . 'See all requests in the admin page: ' . rtrim(config()['site_url'], '/') . '/admin',
                 $email);
         }
         respond(['message' => "Thank you. We've received your request and will reply soon."]);

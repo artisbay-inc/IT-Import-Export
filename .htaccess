@@ -1,0 +1,38 @@
+# IT Import & Export: static pages + PHP API (api/).
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# One address for the whole site: https://itimportexport.com
+# (http, www and the old temporary address all redirect there).
+# .well-known stays reachable over http for the free certificate renewals.
+RewriteCond %{REQUEST_URI} !^/\.well-known/
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} ^(www\.itimportexport\.com|fza\.qrk\.temporary\.site|www\.fza\.qrk\.temporary\.site)$ [NC]
+RewriteRule ^ https://itimportexport.com%{REQUEST_URI} [R=301,L]
+
+# Clean page addresses: /about instead of /about.html, / instead of /index.html.
+# Old .html links redirect permanently (query strings are kept).
+RewriteCond %{THE_REQUEST} \s/+index(\.html)?[\s?]
+RewriteRule ^ / [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+([a-z-]+)\.html[\s?]
+RewriteRule ^ /%1 [R=301,L]
+
+# /about/ -> /about
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([a-z-]+)/$ /$1 [R=301,L]
+
+# Serve /about from about.html.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^([a-z-]+)$ $1.html [L]
+</IfModule>
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php83” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php83___lsphp .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit

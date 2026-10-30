@@ -81,7 +81,7 @@
 
   $("#admin-signout").addEventListener("click", async () => {
     try { await ITIE.post("signout"); } catch (e) { /* signed out locally either way */ }
-    window.location.href = "admin.html";
+    window.location.href = "/admin";
   });
 
   // ── Tabs ───────────────────────────────────────────────────────────────

@@ -81,7 +81,7 @@
   async function showProfile(user) {
     // The admin's profile lives on the admin page, not here.
     if (user.role === "admin") {
-      window.location.replace("admin.html");
+      window.location.replace("/admin");
       return;
     }
     setAccountLink(user);
@@ -107,7 +107,7 @@
     const { user } = await ITIE.post("signin", { email: val("#signin-email"), password: $("#signin-password").value });
     $("#signin-password").value = "";
     if (user.role === "admin") {
-      window.location.href = "admin.html";
+      window.location.href = "/admin";
       return;
     }
     showProfile(user);
@@ -134,7 +134,7 @@
   handle($("#reset-form"), async () => {
     const token = new URLSearchParams(window.location.hash.slice(1)).get("reset") || "";
     const { message } = await ITIE.post("reset", { token, password: $("#reset-password").value });
-    history.replaceState(null, "", "account.html");
+    history.replaceState(null, "", "/account");
     show("signin");
     setFormStatus($("#signin-form"), message, "ok");
   });
@@ -160,7 +160,7 @@
 
   $("#signout-btn").addEventListener("click", async () => {
     try { await ITIE.post("signout"); } catch (e) { /* signed out locally either way */ }
-    window.location.href = "account.html";
+    window.location.href = "/account";
   });
 
   // Start: a reset link wins, then an existing session, then sign in.

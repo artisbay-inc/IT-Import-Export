@@ -148,7 +148,7 @@ if (searchTriggers.length && searchModal) {
       if (model !== "all") params.set("model", model);
       if (type !== "all") params.set("type", type);
       const query = params.toString();
-      window.location.href = "vehicles.html" + (query ? `?${query}` : "");
+      window.location.href = "/vehicles" + (query ? `?${query}` : "");
     });
   }
 }
@@ -157,7 +157,7 @@ if (searchTriggers.length && searchModal) {
 // ITIE.session() resolves to the signed-in user or null; ITIE.post() sends an
 // action with the CSRF token and throws an Error with a readable message.
 const ITIE = (() => {
-  const API = "api/index.php";
+  const API = "/api/index.php";
   let csrf = null;
   let sessionRequest = null;
 
@@ -221,7 +221,7 @@ window.setFormStatus = setFormStatus;
 function setAccountLink(user) {
   document.querySelectorAll(".cl-account-link").forEach((link) => {
     link.textContent = !user ? "Sign in" : user.role === "admin" ? "Admin" : "My account";
-    link.href = user && user.role === "admin" ? "admin.html" : "account.html";
+    link.href = user && user.role === "admin" ? "/admin" : "/account";
   });
 }
 window.setAccountLink = setAccountLink;
