@@ -1,3 +1,13 @@
+// ===== LIGHT / DARK THEME =====
+// The <head> script sets data-theme before paint; this only handles the toggle.
+document.querySelectorAll(".cl-theme-toggle").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try { localStorage.setItem("iti-theme", next); } catch (e) { /* private mode: theme just isn't remembered */ }
+  });
+});
+
 // ===== MOBILE NAV =====
 const menuBtn = document.querySelector(".cl-menu-btn");
 const nav = document.querySelector(".cl-nav");

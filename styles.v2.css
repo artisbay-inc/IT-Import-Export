@@ -11,6 +11,8 @@
   --line: rgba(17, 18, 22, 0.14);
   --card: #ffffff;
   --shadow: 0 12px 28px rgba(17, 18, 22, 0.09);
+  --surface: #ffffff;
+  --accent-solid: #3238ad;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -114,6 +116,9 @@ a { text-decoration: none; color: inherit; }
   width: 100%;
   height: auto;
   object-fit: contain;
+  /* The JPEG has an off-white box and grey edge lines: lift the box to white, trim the edges. */
+  filter: brightness(1.03);
+  clip-path: inset(0 1%);
 }
 
 .cl-nav { display: flex; align-items: center; gap: 1.6rem; }
@@ -822,7 +827,7 @@ html.modal-open, body.modal-open { overflow: hidden; height: 100%; }
 
 @media (max-width: 1100px) {
   .cl-nav { display: none; }
-  .cl-menu-btn { display: flex; }
+  .cl-menu-btn { display: flex; flex-direction: column; justify-content: center; }
 
   .cl-nav.open {
     display: flex;
@@ -877,3 +882,116 @@ html.modal-open, body.modal-open { overflow: hidden; height: 100%; }
   .cl-filter-row { align-items: flex-start; }
   .cl-filter-row-label { width: auto; }
 }
+
+/* ===== THEME TOGGLE ===== */
+.cl-nav { margin-left: auto; }
+.cl-theme-toggle {
+  width: 2.2rem;
+  height: 2.2rem;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.cl-theme-toggle:hover { border-color: var(--navy-3); color: var(--navy-3); }
+.cl-theme-toggle svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.cl-theme-toggle .cl-icon-sun { display: none; }
+[data-theme="dark"] .cl-theme-toggle .cl-icon-sun { display: block; }
+[data-theme="dark"] .cl-theme-toggle .cl-icon-moon { display: none; }
+
+@media (max-width: 1100px) {
+  .cl-theme-toggle { margin-left: auto; }
+}
+
+/* ===== DARK THEME =====
+   Set on <html data-theme="dark"> by the toggle (or the visitor's system
+   setting on first visit). Only colours change; layout is shared. */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --navy: #eef0ff;
+  --navy-2: #a3a9ff;
+  --navy-3: #8b92ff;
+  --amber: #8b92ff;
+  --amber-2: #a3a9ff;
+  --sand: #0f1117;
+  --text: #e8eaf2;
+  --muted: rgba(232, 234, 242, 0.68);
+  --line: rgba(255, 255, 255, 0.12);
+  --card: #181b24;
+  --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  --surface: #14171f;
+  --accent-solid: #4d56da;
+}
+
+/* Logo is black on white: flip it and let the dark header show through. */
+[data-theme="dark"] .cl-logo-img { filter: brightness(1.03) invert(1) hue-rotate(180deg); mix-blend-mode: screen; }
+
+[data-theme="dark"] .cl-header,
+[data-theme="dark"] .cl-stats-strip,
+[data-theme="dark"] .cl-footer,
+[data-theme="dark"] .cl-form,
+[data-theme="dark"] .cl-search-modal,
+[data-theme="dark"] .cl-nav.open { background: var(--surface); }
+[data-theme="dark"] .cl-header { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35); }
+[data-theme="dark"] .cl-nav a { color: rgba(232, 234, 242, 0.78); }
+[data-theme="dark"] .cl-nav a:hover { color: var(--navy-3); }
+
+/* Solid accent fills keep a deeper blue so white text stays readable. */
+[data-theme="dark"] .cl-nav-cta,
+[data-theme="dark"] .cl-demo-tag,
+[data-theme="dark"] .cl-tile:not(.cl-tile-outline),
+[data-theme="dark"] .cl-stock-filter button.is-active { background: var(--accent-solid); border-color: var(--accent-solid); }
+[data-theme="dark"] .cl-nav.open .cl-nav-cta { background: none; }
+[data-theme="dark"] .btn-primary { background: linear-gradient(135deg, #3d45c8, #565fe0); }
+[data-theme="dark"] .btn-outline { border-color: rgba(139, 146, 255, 0.45); }
+[data-theme="dark"] .btn-outline:hover { background: var(--accent-solid); border-color: var(--accent-solid); }
+[data-theme="dark"] .btn-outline-dark:hover { color: var(--sand); }
+
+[data-theme="dark"] .cl-demo-notice { background: #161a2b; color: rgba(232, 234, 242, 0.8); }
+
+[data-theme="dark"] .cl-hero { background: var(--sand); }
+[data-theme="dark"] .cl-hero-bg { filter: saturate(0.8) brightness(0.7); }
+[data-theme="dark"] .cl-hero-overlay {
+  background: linear-gradient(100deg, rgba(12, 14, 20, 0.94) 0%, rgba(12, 14, 20, 0.8) 42%, rgba(12, 14, 20, 0.35) 78%);
+}
+[data-theme="dark"] .cl-hero-tagline { color: rgba(232, 234, 242, 0.8); }
+[data-theme="dark"] .cl-page-banner { background: linear-gradient(150deg, #141827 0%, #1a1f36 100%); }
+[data-theme="dark"] .cl-kicker { background: rgba(139, 146, 255, 0.12); border-color: rgba(139, 146, 255, 0.3); }
+[data-theme="dark"] .cl-section-alt { background: #13161e; }
+[data-theme="dark"] .cl-contact { background: #12151d; }
+
+/* Partner logos are dark artwork on white, so their chips stay light. */
+[data-theme="dark"] .cl-trusted-logo { background: #f4f5f9; }
+
+[data-theme="dark"] .cl-car-specs span { color: #c3c7ff; background: rgba(139, 146, 255, 0.12); }
+[data-theme="dark"] .cl-car-badge.reserved { background: rgba(77, 86, 218, 0.92); }
+[data-theme="dark"] .cl-team-link { background: rgba(139, 146, 255, 0.1); }
+[data-theme="dark"] .cl-team-link:hover { background: rgba(139, 146, 255, 0.18); }
+
+[data-theme="dark"] .cl-map-card { background: linear-gradient(160deg, #161a28 0%, #1b2036 55%); }
+[data-theme="dark"] .cl-map-land path { fill: #2a3156; }
+[data-theme="dark"] .cl-map-grid {
+  background-image:
+    linear-gradient(rgba(139, 146, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 146, 255, 0.1) 1px, transparent 1px);
+}
+
+[data-theme="dark"] .cl-form-group input,
+[data-theme="dark"] .cl-form-group select,
+[data-theme="dark"] .cl-form-group textarea { background: var(--sand); }
+[data-theme="dark"] .cl-form-group input::placeholder,
+[data-theme="dark"] .cl-form-group textarea::placeholder { color: rgba(232, 234, 242, 0.38); }
