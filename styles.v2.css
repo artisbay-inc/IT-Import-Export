@@ -937,8 +937,9 @@ html.modal-open, body.modal-open { overflow: hidden; height: 100%; }
   --accent-solid: #4d56da;
 }
 
-/* Logo is black on white: flip it and let the dark header show through. */
-[data-theme="dark"] .cl-logo-img { filter: brightness(1.03) invert(1) hue-rotate(180deg); mix-blend-mode: screen; }
+/* Never recolour the client's logo. In dark mode it keeps its own white
+   background, trimmed close around the artwork. */
+[data-theme="dark"] .cl-logo-img { clip-path: inset(19% 7% 19% 7% round 12px); }
 
 [data-theme="dark"] .cl-header,
 [data-theme="dark"] .cl-stats-strip,
@@ -997,6 +998,8 @@ html.modal-open, body.modal-open { overflow: hidden; height: 100%; }
 [data-theme="dark"] .cl-form-group textarea::placeholder { color: rgba(232, 234, 242, 0.38); }
 
 /* ===== ACCOUNT + ADMIN PAGES ===== */
+/* The hidden attribute must win over classes that set display (.btn, .cl-tab-count...). */
+[hidden] { display: none !important; }
 .cl-loading { color: var(--muted); text-align: center; padding: 2rem 0; }
 .cl-muted { color: var(--muted); font-size: 0.88rem; }
 .cl-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

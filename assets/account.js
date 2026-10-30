@@ -79,9 +79,13 @@
   }
 
   async function showProfile(user) {
+    // The admin's profile lives on the admin page, not here.
+    if (user.role === "admin") {
+      window.location.replace("admin.html");
+      return;
+    }
     setAccountLink(user);
     $("#profile-email").textContent = user.email;
-    $("#profile-admin-link").hidden = user.role !== "admin";
     $("#profile-name").value = user.name;
     $("#profile-phone").value = user.phone;
     $("#profile-company").value = user.company;
