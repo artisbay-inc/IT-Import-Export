@@ -7,7 +7,7 @@
   <meta name="description" content="Request a customs clearing, freight forwarding, or delivery quote from IT Import & Export CC in Walvis Bay, Namibia." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.v2.css" />
+  <link rel="stylesheet" href="/styles.v2.css?v=billing3" />
   <script>/* Theme before first paint: saved choice, else the system setting. */
   (function(){var t;try{t=localStorage.getItem('iti-theme');}catch(e){}if(t!=='light'&&t!=='dark')t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
@@ -94,8 +94,16 @@
           <label for="cl-destination-2">Destination</label>
           <select id="cl-destination-2" required>
             <option value="">Select a destination</option>
-            <option>Swakopmund</option>
-            <option>Windhoek</option>
+            <optgroup label="Namibia">
+              <option>Walvis Bay</option>
+              <option>Swakopmund</option>
+              <option>Windhoek</option>
+            </optgroup>
+            <optgroup label="Cross-border">
+              <option>Botswana</option>
+              <option>Zambia</option>
+              <option>Angola</option>
+            </optgroup>
             <option>Other</option>
           </select>
         </div>
@@ -116,6 +124,6 @@
     </div>
   </footer>
 
-  <script src="/main.js"></script>
+  <script src="/main.js?v=billing3"></script>
 </body>
 </html>

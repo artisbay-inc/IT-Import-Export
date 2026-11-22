@@ -1234,3 +1234,163 @@ button.cl-tr:hover { background: rgba(50, 56, 173, 0.06); }
 [data-theme="dark"] .cl-drawer-backdrop { background: rgba(0, 0, 0, 0.6); }
 [data-theme="dark"] .btn-danger { color: #ff9b94; border-color: rgba(255, 155, 148, 0.4); }
 [data-theme="dark"] .btn-danger:hover { color: #fff; }
+
+/* ===== Admin: inventory and invoices ===== */
+.cl-toolbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.8rem 1rem; margin-bottom: 1rem; }
+.cl-toolbar .cl-search { flex: 1 1 280px; margin-bottom: 0; }
+.cl-toolbar > .btn { white-space: nowrap; }
+.cl-table-items .cl-tr { grid-template-columns: 1.8fr 1fr 1fr 0.8fr 1fr 0.9fr; }
+.cl-table-invoices .cl-tr { grid-template-columns: 1fr 1.8fr 0.9fr 0.9fr 1fr 0.8fr; }
+a.cl-tr { cursor: pointer; }
+a.cl-tr:hover { background: rgba(50, 56, 173, 0.06); }
+.cl-badge-void { background: rgba(17, 18, 22, 0.08); color: var(--muted); }
+.cl-badge-overdue { background: rgba(196, 40, 40, 0.12); color: #a8261f; }
+.cl-drawer-wide { width: min(620px, 100%); }
+.cl-form-row-3 { grid-template-columns: 1fr 1fr 0.7fr; }
+.cl-small { font-size: 0.8rem; }
+.cl-stock-now { margin: 0 0 0.8rem; font-size: 0.95rem; }
+.cl-stock-now strong { font-size: 1.2rem; color: var(--navy-3); }
+
+.cl-lines { display: grid; gap: 0.7rem; margin-bottom: 0.7rem; }
+.cl-line {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  background: rgba(50, 56, 173, 0.03);
+}
+.cl-line select, .cl-line input {
+  width: 100%;
+  min-width: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.65rem;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.88rem;
+}
+.cl-line-nums { display: grid; grid-template-columns: auto 4.5rem auto minmax(6rem, 1fr) auto auto; gap: 0.5rem; align-items: center; }
+.cl-line-x { color: var(--muted); font-size: 0.82rem; }
+.cl-line .l-total { font-weight: 700; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.cl-line .l-remove { font-size: 0.8rem; }
+
+.cl-totals { display: grid; grid-template-columns: 1fr auto; gap: 0.3rem 1.5rem; margin: 0.6rem 0 0; padding-top: 0.8rem; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.cl-totals dt { color: var(--muted); }
+.cl-totals dd { text-align: right; font-weight: 600; }
+.cl-totals .cl-totals-grand { font-size: 1.1rem; font-weight: 800; color: var(--text); }
+
+@media (max-width: 560px) {
+  .cl-form-row-3 { grid-template-columns: 1fr 1fr; }
+  .cl-line-nums { grid-template-columns: auto 4rem auto 1fr; }
+  .cl-line .l-total { grid-column: 1 / 4; text-align: left; }
+}
+
+[data-theme="dark"] .cl-line select,
+[data-theme="dark"] .cl-line input { background: var(--sand); }
+[data-theme="dark"] .cl-badge-overdue { color: #ff9b94; }
+[data-theme="dark"] a.cl-tr:hover { background: rgba(139, 146, 255, 0.08); }
+
+/* ===== Printable invoice (invoice.html) ===== */
+.cl-invoice-bar { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-bottom: 1.2rem; }
+.cl-invoice-bar .cl-spacer { flex: 1; }
+.cl-invoice {
+  background: #fff;
+  color: #111216;
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  padding: 2.6rem;
+  max-width: 860px;
+  margin: 0 auto;
+  font-size: 0.92rem;
+  box-shadow: var(--shadow);
+}
+.cl-invoice h1, .cl-invoice h2 { color: #111216; }
+.cl-invoice-head { display: flex; justify-content: space-between; gap: 2rem; flex-wrap: wrap; align-items: flex-start; }
+.cl-invoice-head img { height: 64px; width: auto; }
+.cl-invoice-title { text-align: right; }
+.cl-invoice-title h1 { font-size: 2rem; letter-spacing: 0.04em; margin: 0; }
+.cl-invoice-title p { margin: 0.2rem 0 0; color: #555; }
+.cl-invoice-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0 1.6rem; }
+.cl-invoice-parties h2 { font-family: 'Manrope', sans-serif; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: #666; margin: 0 0 0.4rem; }
+.cl-invoice-parties p { margin: 0; white-space: pre-line; }
+.cl-invoice-dates { display: grid; grid-template-columns: auto 1fr; gap: 0.15rem 1rem; }
+.cl-invoice-dates dt { color: #666; }
+.cl-invoice-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.cl-invoice-table th { text-align: left; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: #666; border-bottom: 2px solid #111216; padding: 0.5rem 0.4rem; }
+.cl-invoice-table td { border-bottom: 1px solid #e3e4ea; padding: 0.6rem 0.4rem; vertical-align: top; }
+.cl-invoice-table .r { text-align: right; white-space: nowrap; }
+.cl-invoice-sum { margin: 1rem 0 0 auto; width: min(320px, 100%); display: grid; grid-template-columns: 1fr auto; gap: 0.3rem 1rem; font-variant-numeric: tabular-nums; }
+.cl-invoice-sum dd { text-align: right; margin: 0; }
+.cl-invoice-sum .grand { font-size: 1.15rem; font-weight: 800; border-top: 2px solid #111216; padding-top: 0.4rem; margin-top: 0.2rem; }
+.cl-invoice-foot { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e3e4ea; color: #444; font-size: 0.85rem; display: grid; gap: 0.5rem; }
+.cl-invoice-foot p { margin: 0; white-space: pre-line; }
+.cl-invoice-stamp { display: inline-block; margin-top: 0.4rem; padding: 0.15rem 0.6rem; border: 2px solid currentColor; border-radius: 0.3rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.8rem; }
+.cl-invoice-stamp.paid { color: #13693a; }
+.cl-invoice-stamp.void { color: #a8261f; }
+.cl-invoice-stamp.overdue { color: #a8261f; }
+.cl-invoice-stamp.unpaid { color: #3238ad; }
+.cl-invoice-wrap { overflow-x: auto; }
+@media (max-width: 640px) {
+  .cl-invoice { padding: 1.4rem; }
+  .cl-invoice-parties { grid-template-columns: 1fr; gap: 1rem; }
+  .cl-invoice-title { text-align: left; }
+}
+@media print {
+  @page { size: A4; margin: 14mm; }
+  body { background: #fff !important; }
+  .cl-header, .cl-nav-backdrop, .cl-page-banner, .cl-footer, .cl-invoice-bar, .cl-no-print { display: none !important; }
+  .cl-section { padding: 0 !important; }
+  .cl-shell { width: 100% !important; }
+  .cl-invoice { border: 0; box-shadow: none; padding: 0; max-width: none; }
+}
+.cl-stat-tile { min-width: 0; }
+.cl-stat-tile strong { overflow-wrap: anywhere; }
+@media (max-width: 560px) {
+  .cl-stat-tile { padding: 0.85rem 0.9rem; }
+  .cl-stat-tile strong { font-size: 1.3rem; }
+}
+
+/* ===== Admin: customers, cars, settings, calculator (v2) ===== */
+.cl-stock-more { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.8rem; }
+#item-invoice-row { margin: 0.4rem 0 0.2rem; }
+.cl-seg { display: inline-flex; gap: 0.3rem; padding: 0.25rem; border: 1px solid var(--line); border-radius: 999px; justify-self: start; }
+.cl-seg label { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.85rem; border-radius: 999px; font-size: 0.86rem; font-weight: 700; cursor: pointer; color: var(--muted); }
+.cl-seg input { accent-color: var(--accent-solid); }
+.cl-seg label:has(input:checked) { background: rgba(50, 56, 173, 0.1); color: var(--navy-3); }
+.cl-form-row-4 { grid-template-columns: 1fr 1.3fr 0.6fr 0.6fr; }
+.cl-card-wide { grid-column: 1 / -1; }
+.cl-check { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.92rem; cursor: pointer; }
+.cl-check input { width: 1.1rem; height: 1.1rem; accent-color: var(--accent-solid); }
+.cl-subhead { font-family: 'Manrope', sans-serif; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0.6rem 0 0; }
+.cl-calc-help { margin: -0.4rem 0 1rem; }
+.cl-calc-admin { grid-template-columns: 1.4fr 1fr; }
+.cl-calc-nums { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(4.5rem, 1fr) auto auto auto; gap: 0.5rem; align-items: center; }
+.cl-rates { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.cl-totals dt small { display: block; font-size: 0.75rem; color: var(--muted); font-weight: 500; }
+
+/* Public calculator */
+.cl-calc { display: grid; grid-template-columns: 1fr 1.1fr; gap: 1.2rem; align-items: start; }
+.cl-calc .cl-card h2 { margin-bottom: 1rem; }
+.cl-calc-result { margin-bottom: 1rem; border-top: 0; padding-top: 0; }
+.cl-calc-result dt, .cl-calc-result dd { padding: 0.35rem 0; border-bottom: 1px solid var(--line); }
+.cl-calc-off { max-width: 560px; }
+.cl-calc-off p { margin: 0 0 1rem; }
+
+@media (max-width: 860px) {
+  .cl-calc, .cl-calc-admin { grid-template-columns: 1fr; }
+  .cl-form-row-4, .cl-rates { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .cl-calc-nums { grid-template-columns: 1fr 1fr; }
+  .cl-calc-nums .k-unit { display: none; }
+}
+[data-theme="dark"] .cl-seg label:has(input:checked) { background: rgba(139, 146, 255, 0.14); color: #c5c9ff; }
+
+/* Fixes: fields never wider than their column; link buttons stay left; long totals shrink */
+.cl-form-row > *, .cl-form-group { min-width: 0; }
+.cl-form-group input, .cl-form-group select, .cl-form-group textarea { width: 100%; min-width: 0; }
+.cl-form-plain > .cl-linkbtn, .cl-form-plain .cl-linkbtn#line-add, .cl-form-plain .cl-linkbtn#calc-add { justify-self: start; }
+.cl-stat-tile strong { font-size: clamp(1.25rem, 2.1vw, 1.9rem); }
+#item-drawer { width: min(620px, 100%); }

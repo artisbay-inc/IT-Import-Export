@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.v2.css" />
+  <link rel="stylesheet" href="/styles.v2.css?v=billing3" />
   <script>/* Theme before first paint: saved choice, else the system setting. */
   (function(){var t;try{t=localStorage.getItem('iti-theme');}catch(e){}if(t!=='light'&&t!=='dark')t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
@@ -83,13 +83,17 @@
           </div>
           <div class="cl-form-row">
             <div class="cl-form-group">
+              <label for="signup-country">Country</label>
+              <select id="signup-country" autocomplete="country-name"></select>
+            </div>
+            <div class="cl-form-group">
               <label for="signup-phone">Phone <span class="cl-optional">(optional)</span></label>
               <input id="signup-phone" type="tel" autocomplete="tel" maxlength="40" />
             </div>
-            <div class="cl-form-group">
-              <label for="signup-company">Company <span class="cl-optional">(optional)</span></label>
-              <input id="signup-company" type="text" autocomplete="organization" maxlength="120" />
-            </div>
+          </div>
+          <div class="cl-form-group">
+            <label for="signup-company">Company <span class="cl-optional">(optional)</span></label>
+            <input id="signup-company" type="text" autocomplete="organization" maxlength="120" />
           </div>
           <div class="cl-form-group">
             <label for="signup-password">Password <span class="cl-optional">(8 characters or more)</span></label>
@@ -156,22 +160,22 @@
               </div>
               <div class="cl-form-row">
                 <div class="cl-form-group">
+                  <label for="profile-country">Country</label>
+                  <select id="profile-country" autocomplete="country-name"></select>
+                </div>
+                <div class="cl-form-group">
+                  <label for="profile-city">City</label>
+                  <input id="profile-city" type="text" autocomplete="address-level2" maxlength="80" />
+                </div>
+              </div>
+              <div class="cl-form-row">
+                <div class="cl-form-group">
                   <label for="profile-phone">Phone</label>
                   <input id="profile-phone" type="tel" autocomplete="tel" maxlength="40" />
                 </div>
                 <div class="cl-form-group">
                   <label for="profile-company">Company</label>
                   <input id="profile-company" type="text" autocomplete="organization" maxlength="120" />
-                </div>
-              </div>
-              <div class="cl-form-row">
-                <div class="cl-form-group">
-                  <label for="profile-country">Country</label>
-                  <input id="profile-country" type="text" autocomplete="country-name" maxlength="80" />
-                </div>
-                <div class="cl-form-group">
-                  <label for="profile-city">City</label>
-                  <input id="profile-city" type="text" autocomplete="address-level2" maxlength="80" />
                 </div>
               </div>
               <button type="submit" class="btn btn-primary">Save details</button>
@@ -215,7 +219,8 @@
     </div>
   </footer>
 
-  <script src="/main.js"></script>
-  <script src="/assets/account.js"></script>
+  <script src="/main.js?v=billing3"></script>
+  <script src="/assets/countries.js?v=billing3"></script>
+  <script src="/assets/account.js?v=billing3"></script>
 </body>
 </html>

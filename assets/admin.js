@@ -122,11 +122,11 @@
         row.type = "button";
         row.append(
           el("span", "cl-td-name", c.name),
-          el("span", "", c.email),
+          el("span", "", c.email || "—"),
           el("span", "", c.phone || "—"),
           el("span", "", c.company || "—"),
           el("span", "", ITIE.date(c.created_at)),
-          el("span", "", ITIE.ago(c.last_seen)),
+          el("span", "", c.last_seen ? ITIE.ago(c.last_seen) : "Never signed in"),
         );
         row.addEventListener("click", () => openCustomer(c.id));
         table.append(row);
@@ -141,6 +141,9 @@
     clearTimeout(searchTimer);
     searchTimer = setTimeout(loadCustomers, 250);
   });
+
+  ITIE_COUNTRY.fill($("#d-country"));
+  ITIE_COUNTRY.link($("#d-country"), $("#d-phone"));
 
   // ── Customer drawer ────────────────────────────────────────────────────
 
@@ -159,13 +162,12 @@
     try {
       const { customer: c, notes, activity, quotes } = await ITIE.post("admin_customer", { id });
       $("#drawer-name").textContent = c.name;
-      $("#drawer-meta").textContent = `Joined ${ITIE.date(c.created_at)} · last active ${ITIE.ago(c.last_seen).toLowerCase()}`;
+      $("#drawer-meta").textContent = `Joined ${ITIE.date(c.created_at)} · ${c.last_seen ? `last active ${ITIE.ago(c.last_seen).toLowerCase()}` : "has not signed in yet"}`;
       $("#d-name").value = c.name;
-      $("#d-email").textContent = c.email;
-      $("#d-email").href = `mailto:${c.email}`;
+      $("#d-email").value = c.email;
       $("#d-phone").value = c.phone;
       $("#d-company").value = c.company;
-      $("#d-country").value = c.country;
+      ITIE_COUNTRY.setValue($("#d-country"), c.country);
       $("#d-city").value = c.city;
       fillList($("#drawer-notes"), notes, "No notes yet.", (n) => {
         const li = listRow(n.text, ITIE.dateTime(n.created_at));
@@ -185,7 +187,7 @@
       $("#drawer-backdrop").hidden = false;
       document.body.classList.add("modal-open");
     } catch (err) {
-      alert(err.message);
+      showListError(err.message);
     }
   }
 
@@ -199,9 +201,10 @@
     await ITIE.post("admin_customer_update", {
       id: openId,
       name: val("#d-name"),
+      email: val("#d-email"),
       phone: val("#d-phone"),
       company: val("#d-company"),
-      country: val("#d-country"),
+      country: $("#d-country").value,
       city: val("#d-city"),
     });
     $("#drawer-name").textContent = val("#d-name");
@@ -215,6 +218,19 @@
     openCustomer(openId);
   });
 
+  // Shown above the customer list when a customer can't be opened.
+  function showListError(message) {
+    let box = $("#customer-list-error");
+    if (!box) {
+      box = el("p", "cl-form-status is-error");
+      box.id = "customer-list-error";
+      box.setAttribute("role", "alert");
+      $("#customer-table").before(box);
+    }
+    box.textContent = message;
+    box.hidden = false;
+  }
+
   $("#drawer-delete").addEventListener("click", async () => {
     // Two clicks: the first one asks, the second one deletes.
     if (!deleteArmed) {
@@ -227,7 +243,7 @@
       closeDrawer();
       loadCustomers();
     } catch (err) {
-      alert(err.message);
+      setFormStatus($("#drawer-form"), err.message, "error");
     }
   });
 

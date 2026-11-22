@@ -26,4 +26,13 @@ return [
 
     // Used to build links in emails (no trailing slash).
     'site_url' => 'https://example.com',
+
+    // Printed at the top and bottom of every invoice. All optional.
+    'business_name' => 'IT Import & Export CC',
+    'business_address' => "Walvis Bay\nNamibia",
+    'business_phone' => '',
+    'business_email' => '',
+    'business_vat_number' => '',
+    'business_bank_details' => '', // e.g. "Bank Windhoek · Acc 000000000 · Branch 000000"
+    'currency' => 'N$',
 ];

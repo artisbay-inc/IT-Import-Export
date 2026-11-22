@@ -5,7 +5,15 @@
  *
  *   ITIE_CONFIG=/path/to/config.php php -S 127.0.0.1:8000 router.php
  */
-$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+// Take the path by hand: parse_url() reads "//calculator" as a host name and
+// returns no path, which printed a PHP warning on the page.
+$uri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
+$raw = strtok($uri, '?') ?: '/';
+$path = preg_replace('#/{2,}#', '/', $raw);
+if ($path !== $raw) { // "//calculator" -> "/calculator"
+    header('Location: ' . $path . substr($uri, strlen($raw)), true, 301);
+    return true;
+}
 if ($path === '/') {
     readfile(__DIR__ . '/index.html');
     return true;

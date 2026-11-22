@@ -78,6 +78,12 @@
     return li;
   }
 
+  // Country dropdowns: picking a country puts its dialing code in the phone box.
+  ITIE_COUNTRY.fill($("#signup-country"));
+  ITIE_COUNTRY.link($("#signup-country"), $("#signup-phone"));
+  ITIE_COUNTRY.fill($("#profile-country"));
+  ITIE_COUNTRY.link($("#profile-country"), $("#profile-phone"));
+
   async function showProfile(user) {
     // The admin's profile lives on the admin page, not here.
     if (user.role === "admin") {
@@ -89,7 +95,7 @@
     $("#profile-name").value = user.name;
     $("#profile-phone").value = user.phone;
     $("#profile-company").value = user.company;
-    $("#profile-country").value = user.country;
+    ITIE_COUNTRY.setValue($("#profile-country"), user.country);
     $("#profile-city").value = user.city;
     show("profile");
     try {
@@ -119,6 +125,7 @@
       email: val("#signup-email"),
       phone: val("#signup-phone"),
       company: val("#signup-company"),
+      country: $("#signup-country").value,
       password: $("#signup-password").value,
     });
     $("#signup-password").value = "";
@@ -144,7 +151,7 @@
       name: val("#profile-name"),
       phone: val("#profile-phone"),
       company: val("#profile-company"),
-      country: val("#profile-country"),
+      country: $("#profile-country").value,
       city: val("#profile-city"),
     });
     setFormStatus($("#profile-form"), "Saved.", "ok");

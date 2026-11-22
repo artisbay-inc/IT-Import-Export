@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice — IT Import &amp; Export CC</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.v2.css?v=billing3" />
+  <script>/* Theme before first paint: saved choice, else the system setting. */
+  (function(){var t;try{t=localStorage.getItem('iti-theme');}catch(e){}if(t!=='light'&&t!=='dark')t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
+</head>
+<body>
+
+  <header class="cl-header">
+    <div class="cl-shell cl-header-inner">
+      <a href="/" class="cl-logo" aria-label="IT Import and Export CC home">
+        <img src="/assets/it-import-export-logo.jpeg" alt="IT Import and Export logo" class="cl-logo-img" />
+      </a>
+      <nav class="cl-nav">
+        <a href="/">Home</a>
+        <a href="/clearing">Clearing</a>
+        <a href="/forwarding">Forwarding &amp; Delivery</a>
+        <a href="/about">About</a>
+        <a href="/vehicles">Vehicles</a>
+        <a href="/account" class="cl-account-link">Sign in</a>
+        <a href="/contact" class="cl-nav-cta">Get a Quote</a>
+      </nav>
+      <button type="button" class="cl-theme-toggle" aria-label="Switch light or dark theme" title="Light / dark"><svg class="cl-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.8A8.2 8.2 0 1 1 9.2 4a6.6 6.6 0 0 0 10.8 10.8Z"/></svg><svg class="cl-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></button>
+      <button type="button" class="cl-menu-btn" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <div class="cl-nav-backdrop" aria-hidden="true"></div>
+
+  <section class="cl-section">
+    <div class="cl-shell">
+      <p class="cl-loading" id="inv-loading">Loading…</p>
+      <p class="cl-table-empty" id="inv-error" hidden></p>
+
+      <div id="inv-app" hidden>
+        <div class="cl-invoice-bar">
+          <a href="/admin#invoices" class="btn btn-outline">← All invoices</a>
+          <span class="cl-spacer"></span>
+          <p class="cl-form-status" id="inv-status" role="status" hidden></p>
+          <button type="button" class="btn btn-outline" id="inv-paid"></button>
+          <button type="button" class="btn btn-danger" id="inv-void">Cancel invoice</button>
+          <button type="button" class="btn btn-primary" id="inv-print">Print or save as PDF</button>
+        </div>
+
+        <article class="cl-invoice" aria-label="Invoice">
+          <div class="cl-invoice-head">
+            <div>
+              <img src="/assets/it-import-export-logo.jpeg" alt="IT Import and Export" />
+            </div>
+            <div class="cl-invoice-title">
+              <h1>INVOICE</h1>
+              <p id="inv-number"></p>
+              <span class="cl-invoice-stamp" id="inv-stamp"></span>
+            </div>
+          </div>
+
+          <div class="cl-invoice-parties">
+            <div>
+              <h2>From</h2>
+              <p id="inv-from"></p>
+            </div>
+            <div>
+              <h2>Bill to</h2>
+              <p id="inv-to"></p>
+              <dl class="cl-invoice-dates" style="margin-top:0.9rem">
+                <dt>Invoice date</dt><dd id="inv-issue"></dd>
+                <dt>Due date</dt><dd id="inv-due"></dd>
+              </dl>
+            </div>
+          </div>
+
+          <div class="cl-invoice-wrap">
+            <table class="cl-invoice-table">
+              <thead><tr><th>Description</th><th class="r">Qty</th><th class="r">Unit price</th><th class="r">Amount</th></tr></thead>
+              <tbody id="inv-lines"></tbody>
+            </table>
+          </div>
+
+          <dl class="cl-invoice-sum">
+            <dt>Subtotal</dt><dd id="inv-sub"></dd>
+            <dt id="inv-vat-label">VAT</dt><dd id="inv-vat"></dd>
+            <dt class="grand">Total due</dt><dd class="grand" id="inv-total"></dd>
+          </dl>
+
+          <div class="cl-invoice-foot">
+            <p id="inv-notes" hidden></p>
+            <p id="inv-bank" hidden></p>
+            <p>Thank you for your business.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <script src="/main.js?v=billing3"></script>
+  <script>
+  (() => {
+    const $ = (s) => document.querySelector(s);
+    const id = new URLSearchParams(location.search).get("id");
+    let currency = "N$";
+    let voidArmed = false;
+    let current = null;
+    const money = (c) => `${currency} ${(c / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const longDate = (iso) => new Date(iso + "T00:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+
+    function showError(message, signIn) {
+      $("#inv-loading").hidden = true;
+      $("#inv-app").hidden = true;
+      const box = $("#inv-error");
+      box.textContent = message + " ";
+      if (signIn) {
+        const a = document.createElement("a");
+        a.href = "/admin";
+        a.className = "cl-linkbtn";
+        a.textContent = "Sign in to the admin page";
+        box.append(a);
+      }
+      box.hidden = false;
+    }
+
+    async function load() {
+      if (!id) return showError("No invoice chosen.");
+      try {
+        const { invoice: inv, lines, business: biz, today } = await ITIE.post("admin_invoice", { id });
+        current = inv;
+        currency = biz.currency || currency;
+        document.title = `${inv.number} — ${biz.name}`;
+        $("#inv-number").textContent = inv.number;
+        const overdue = inv.status === "unpaid" && inv.due_date < today;
+        const stamp = overdue ? "overdue" : inv.status;
+        $("#inv-stamp").className = `cl-invoice-stamp ${stamp}`;
+        $("#inv-stamp").textContent = { paid: "Paid", void: "Cancelled", overdue: "Overdue", unpaid: "Unpaid" }[stamp];
+
+        $("#inv-from").textContent = [biz.name, biz.address, biz.phone, biz.email, biz.vat_number ? `VAT no. ${biz.vat_number}` : ""].filter(Boolean).join("\n");
+        $("#inv-to").textContent = [inv.bill_name, inv.bill_company, inv.bill_address, inv.bill_phone, inv.bill_email].filter(Boolean).join("\n");
+        $("#inv-issue").textContent = longDate(inv.issue_date);
+        $("#inv-due").textContent = longDate(inv.due_date);
+
+        const body = $("#inv-lines");
+        body.replaceChildren();
+        lines.forEach((l) => {
+          const tr = document.createElement("tr");
+          [[l.description, ""], [String(l.qty), "r"], [money(l.unit_cents), "r"], [money(l.line_cents), "r"]].forEach(([text, cls]) => {
+            const td = document.createElement("td");
+            td.textContent = text;
+            if (cls) td.className = cls;
+            tr.append(td);
+          });
+          body.append(tr);
+        });
+        $("#inv-sub").textContent = money(inv.subtotal_cents);
+        $("#inv-vat-label").textContent = `VAT ${+inv.vat_rate}%`;
+        $("#inv-vat").textContent = money(inv.vat_cents);
+        $("#inv-total").textContent = money(inv.total_cents);
+        $("#inv-notes").textContent = inv.notes;
+        $("#inv-notes").hidden = !inv.notes;
+        $("#inv-bank").textContent = biz.bank ? `Pay to: ${biz.bank}\nReference: ${inv.number}` : "";
+        $("#inv-bank").hidden = !biz.bank;
+
+        $("#inv-paid").textContent = inv.status === "paid" ? "Mark as unpaid" : "Mark as paid";
+        $("#inv-paid").hidden = inv.status === "void";
+        $("#inv-void").hidden = inv.status === "void";
+        voidArmed = false;
+        $("#inv-void").textContent = "Cancel invoice";
+
+        $("#inv-loading").hidden = true;
+        $("#inv-app").hidden = false;
+      } catch (err) {
+        showError(err.message, /sign in|admins only/i.test(err.message));
+      }
+    }
+
+    function status(message, kind) {
+      const s = $("#inv-status");
+      s.textContent = message;
+      s.className = "cl-form-status" + (kind ? ` is-${kind}` : "");
+      s.hidden = !message;
+    }
+
+    async function setStatus(next, done) {
+      try {
+        await ITIE.post("admin_invoice_status", { id, status: next });
+        await load();
+        status(done, "ok");
+      } catch (err) {
+        status(err.message, "error");
+      }
+    }
+
+    $("#inv-paid").addEventListener("click", () =>
+      current.status === "paid" ? setStatus("unpaid", "Marked as unpaid.") : setStatus("paid", "Marked as paid."));
+
+    $("#inv-void").addEventListener("click", () => {
+      // Two clicks: the first one asks, the second one cancels.
+      if (!voidArmed) {
+        voidArmed = true;
+        $("#inv-void").textContent = "Click again to cancel it";
+        return;
+      }
+      setStatus("void", "Invoice cancelled. Any items on it are back in stock.");
+    });
+
+    $("#inv-print").addEventListener("click", () => window.print());
+    load();
+  })();
+  </script>
+</body>
+</html>

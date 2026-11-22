@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.v2.css" />
+  <link rel="stylesheet" href="/styles.v2.css?v=billing3" />
   <script>/* Theme before first paint: saved choice, else the system setting. */
   (function(){var t;try{t=localStorage.getItem('iti-theme');}catch(e){}if(t!=='light'&&t!=='dark')t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
@@ -38,7 +38,7 @@
     <div class="cl-shell">
       <p class="cl-eyebrow">Back Office</p>
       <h1>Admin</h1>
-      <p id="admin-sub">Your customers, their quote requests and your notes, in one place.</p>
+      <p id="admin-sub">Your customers, quote requests, stock and invoices, in one place.</p>
     </div>
   </section>
 
@@ -72,7 +72,10 @@
           <div class="cl-tabs" role="tablist">
             <button type="button" class="cl-tab is-active" data-tab="customers" role="tab">Customers</button>
             <button type="button" class="cl-tab" data-tab="quotes" role="tab">Quote requests <span class="cl-tab-count" id="tab-quote-count" hidden></span></button>
-            <button type="button" class="cl-tab" data-tab="me" role="tab">My admin profile</button>
+            <button type="button" class="cl-tab" data-tab="inventory" role="tab">Inventory</button>
+            <button type="button" class="cl-tab" data-tab="invoices" role="tab">Invoices</button>
+            <button type="button" class="cl-tab" data-tab="calculator" role="tab">Calculator</button>
+            <button type="button" class="cl-tab" data-tab="me" role="tab">Settings</button>
           </div>
           <div class="cl-account-actions">
             <span class="cl-muted">Signed in as <strong id="admin-who"></strong></span>
@@ -88,9 +91,12 @@
             <div class="cl-stat-tile"><strong id="stat-active">0</strong><span>Active this week</span></div>
             <div class="cl-stat-tile"><strong id="stat-quotes">0</strong><span>Open quote requests</span></div>
           </div>
-          <div class="cl-form-group cl-search">
-            <label for="customer-search">Search</label>
-            <input id="customer-search" type="search" placeholder="Name, email, phone, company or notes" />
+          <div class="cl-toolbar">
+            <div class="cl-form-group cl-search">
+              <label for="customer-search">Search</label>
+              <input id="customer-search" type="search" placeholder="Name, email, phone, company or notes" />
+            </div>
+            <button type="button" class="btn btn-primary" id="customer-new">Add customer</button>
           </div>
           <div class="cl-table" id="customer-table" role="table" aria-label="Customers"></div>
         </div>
@@ -100,7 +106,92 @@
           <div class="cl-quote-list" id="quote-list"></div>
         </div>
 
-        <!-- Admin profile -->
+        <!-- Inventory -->
+        <div data-panel="inventory" hidden>
+          <div class="cl-stat-tiles">
+            <div class="cl-stat-tile"><strong id="inv-stat-items">0</strong><span>Items</span></div>
+            <div class="cl-stat-tile"><strong id="inv-stat-units">0</strong><span>Units in stock</span></div>
+            <div class="cl-stat-tile"><strong id="inv-stat-value">0</strong><span>Stock value</span></div>
+            <div class="cl-stat-tile"><strong id="inv-stat-low">0</strong><span>Low or out of stock</span></div>
+          </div>
+          <div class="cl-toolbar">
+            <div class="cl-form-group cl-search">
+              <label for="item-search">Search</label>
+              <input id="item-search" type="search" placeholder="Make, model, chassis number, stock code…" />
+            </div>
+            <button type="button" class="btn btn-primary" id="item-new">Add item</button>
+          </div>
+          <div class="cl-table cl-table-items" id="item-table" role="table" aria-label="Inventory"></div>
+        </div>
+
+        <!-- Invoices -->
+        <div data-panel="invoices" hidden>
+          <div class="cl-stat-tiles">
+            <div class="cl-stat-tile"><strong id="bill-stat-owed">0</strong><span>Waiting to be paid</span></div>
+            <div class="cl-stat-tile"><strong id="bill-stat-overdue">0</strong><span id="bill-stat-overdue-label">Overdue</span></div>
+            <div class="cl-stat-tile"><strong id="bill-stat-month">0</strong><span>Paid this month</span></div>
+            <div class="cl-stat-tile"><strong id="bill-stat-total">0</strong><span>Invoices</span></div>
+          </div>
+          <div class="cl-toolbar">
+            <div class="cl-form-group cl-search">
+              <label for="invoice-search">Search</label>
+              <input id="invoice-search" type="search" placeholder="Invoice number, customer, company or email" />
+            </div>
+            <div class="cl-form-group">
+              <label for="invoice-filter">Show</label>
+              <select id="invoice-filter">
+                <option value="">All invoices</option>
+                <option value="unpaid">Unpaid</option>
+                <option value="overdue">Overdue</option>
+                <option value="paid">Paid</option>
+                <option value="void">Cancelled</option>
+              </select>
+            </div>
+            <button type="button" class="btn btn-primary" id="invoice-new">New invoice</button>
+          </div>
+          <div class="cl-table cl-table-invoices" id="invoice-table" role="table" aria-label="Invoices"></div>
+        </div>
+
+        <!-- Clearing calculator -->
+        <div data-panel="calculator" hidden>
+          <div class="cl-account-grid cl-calc-admin">
+            <div class="cl-card">
+              <h2>Charges</h2>
+              <p class="cl-muted cl-calc-help">Customers enter the value of their car; these charges are added in order. Copy the rates from your spreadsheet.</p>
+              <form class="cl-form-plain" id="calc-form" novalidate>
+                <div id="calc-lines" class="cl-lines"></div>
+                <button type="button" class="cl-linkbtn" id="calc-add">+ Add a charge</button>
+                <div class="cl-form-group">
+                  <label for="calc-note">Note under the result <span class="cl-optional">(optional)</span></label>
+                  <textarea id="calc-note" rows="2" maxlength="600" placeholder="This is an estimate. The final amount depends on the customs valuation."></textarea>
+                </div>
+                <h3 class="cl-subhead">Exchange rates</h3>
+                <p class="cl-muted cl-small">How many <span class="js-currency">N$</span> for 1 unit, so customers can enter the price they paid in Japan or elsewhere. Leave empty to hide a currency.</p>
+                <div class="cl-form-row cl-rates">
+                  <div class="cl-form-group"><label for="rate-JPY">1 JPY =</label><input id="rate-JPY" type="text" inputmode="decimal" placeholder="0.12" /></div>
+                  <div class="cl-form-group"><label for="rate-USD">1 USD =</label><input id="rate-USD" type="text" inputmode="decimal" placeholder="18.20" /></div>
+                  <div class="cl-form-group"><label for="rate-ZAR">1 ZAR =</label><input id="rate-ZAR" type="text" inputmode="decimal" placeholder="1" /></div>
+                  <div class="cl-form-group"><label for="rate-EUR">1 EUR =</label><input id="rate-EUR" type="text" inputmode="decimal" placeholder="19.80" /></div>
+                </div>
+                <label class="cl-check"><input type="checkbox" id="calc-enabled" /> Show the calculator on the website</label>
+                <p class="cl-form-status" role="status" hidden></p>
+                <button type="submit" class="btn btn-primary">Save calculator</button>
+              </form>
+            </div>
+            <div class="cl-card">
+              <h2>Try it</h2>
+              <p class="cl-muted cl-small">Uses the charges on the left, even before you save.</p>
+              <div class="cl-form-row">
+                <div class="cl-form-group"><label for="calc-try-value">Car value</label><input id="calc-try-value" type="text" inputmode="decimal" value="100000" /></div>
+                <div class="cl-form-group"><label for="calc-try-cur">Currency</label><select id="calc-try-cur"></select></div>
+              </div>
+              <dl class="cl-totals" id="calc-try-result"></dl>
+              <p class="cl-muted cl-small"><a class="cl-linkbtn" href="/calculator" target="_blank" rel="noopener">Open the customer page</a></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings: admin profile + invoice details -->
         <div data-panel="me" hidden>
           <div class="cl-account-grid">
             <div class="cl-card">
@@ -137,6 +228,51 @@
                 <button type="submit" class="btn btn-outline">Change password</button>
               </form>
             </div>
+            <div class="cl-card cl-card-wide">
+              <h2>Details printed on invoices</h2>
+              <form class="cl-form-plain" id="biz-form" novalidate>
+                <p class="cl-form-status" role="status" hidden></p>
+                <div class="cl-form-row">
+                  <div class="cl-form-group">
+                    <label for="biz-name">Company name</label>
+                    <input id="biz-name" type="text" maxlength="150" required />
+                  </div>
+                  <div class="cl-form-group">
+                    <label for="biz-vatno">VAT number <span class="cl-optional">(optional)</span></label>
+                    <input id="biz-vatno" type="text" maxlength="60" />
+                  </div>
+                </div>
+                <div class="cl-form-row">
+                  <div class="cl-form-group">
+                    <label for="biz-address">Address</label>
+                    <textarea id="biz-address" rows="3" maxlength="400"></textarea>
+                  </div>
+                  <div class="cl-form-group">
+                    <label for="biz-bank">Bank account for payments</label>
+                    <textarea id="biz-bank" rows="3" maxlength="600" placeholder="Bank, account name, account number, branch code"></textarea>
+                  </div>
+                </div>
+                <div class="cl-form-row cl-form-row-4">
+                  <div class="cl-form-group">
+                    <label for="biz-phone">Phone</label>
+                    <input id="biz-phone" type="tel" maxlength="60" />
+                  </div>
+                  <div class="cl-form-group">
+                    <label for="biz-email">Email</label>
+                    <input id="biz-email" type="email" maxlength="190" />
+                  </div>
+                  <div class="cl-form-group">
+                    <label for="biz-currency">Currency</label>
+                    <input id="biz-currency" type="text" maxlength="8" required />
+                  </div>
+                  <div class="cl-form-group">
+                    <label for="biz-vat">Default VAT %</label>
+                    <input id="biz-vat" type="number" min="0" max="100" step="0.01" required />
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Save invoice details</button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -158,8 +294,8 @@
         <input id="d-name" type="text" maxlength="100" required />
       </div>
       <div class="cl-form-group">
-        <label>Email</label>
-        <a id="d-email" class="cl-drawer-link"></a>
+        <label for="d-email">Email <span class="cl-optional">(leave empty if they have none)</span></label>
+        <input id="d-email" type="email" maxlength="190" />
       </div>
       <div class="cl-form-row">
         <div class="cl-form-group">
@@ -174,7 +310,7 @@
       <div class="cl-form-row">
         <div class="cl-form-group">
           <label for="d-country">Country</label>
-          <input id="d-country" type="text" maxlength="80" />
+          <select id="d-country"></select>
         </div>
         <div class="cl-form-group">
           <label for="d-city">City</label>
@@ -206,6 +342,247 @@
     </div>
   </aside>
 
+  <!-- Add customer drawer -->
+  <aside class="cl-drawer" id="customer-drawer" role="dialog" aria-modal="true" aria-labelledby="customer-new-title" hidden>
+    <button type="button" class="cl-search-modal-close" data-close-drawer aria-label="Close">&times;</button>
+    <h2 id="customer-new-title">Add a customer</h2>
+    <p class="cl-muted">For customers who come to the office or call. They can set a password later with “Forgot password” on the sign-in page.</p>
+    <form class="cl-form-plain" id="customer-form" novalidate>
+      <p class="cl-form-status" role="status" hidden></p>
+      <div class="cl-form-group">
+        <label for="c-name">Name</label>
+        <input id="c-name" type="text" maxlength="100" required />
+      </div>
+      <div class="cl-form-row">
+        <div class="cl-form-group">
+          <label for="c-country">Country</label>
+          <select id="c-country"></select>
+        </div>
+        <div class="cl-form-group">
+          <label for="c-city">City</label>
+          <input id="c-city" type="text" maxlength="80" />
+        </div>
+      </div>
+      <div class="cl-form-row">
+        <div class="cl-form-group">
+          <label for="c-phone">Phone</label>
+          <input id="c-phone" type="tel" maxlength="40" />
+        </div>
+        <div class="cl-form-group">
+          <label for="c-email">Email <span class="cl-optional">(optional)</span></label>
+          <input id="c-email" type="email" maxlength="190" />
+        </div>
+      </div>
+      <div class="cl-form-group">
+        <label for="c-company">Company <span class="cl-optional">(optional)</span></label>
+        <input id="c-company" type="text" maxlength="120" />
+      </div>
+      <div class="cl-form-group">
+        <label for="c-note">First note <span class="cl-optional">(optional)</span></label>
+        <textarea id="c-note" rows="2" maxlength="2000" placeholder="What they need, how they found you…"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Add customer</button>
+    </form>
+  </aside>
+
+  <!-- Inventory item drawer -->
+  <aside class="cl-drawer" id="item-drawer" role="dialog" aria-modal="true" aria-labelledby="item-title" hidden>
+    <button type="button" class="cl-search-modal-close" data-close-drawer aria-label="Close">&times;</button>
+    <h2 id="item-title">New item</h2>
+    <p class="cl-muted" id="item-meta"></p>
+
+    <div id="item-invoice-row" hidden>
+      <button type="button" class="btn btn-outline" id="item-invoice">Create an invoice for this item</button>
+    </div>
+
+    <h3>Details</h3>
+    <form class="cl-form-plain" id="item-form" novalidate>
+      <p class="cl-form-status" role="status" hidden></p>
+      <div class="cl-seg" role="radiogroup" aria-label="Type of item">
+        <label><input type="radio" name="i-kind" value="car" checked /> Car</label>
+        <label><input type="radio" name="i-kind" value="other" /> Other item or part</label>
+      </div>
+      <div id="i-car-fields" class="cl-form-plain">
+        <div class="cl-form-row cl-form-row-3">
+          <div class="cl-form-group">
+            <label for="i-make">Make</label>
+            <input id="i-make" type="text" maxlength="60" list="car-makes" placeholder="Toyota" />
+            <datalist id="car-makes"><option value="Toyota"></option><option value="Nissan"></option><option value="Honda"></option><option value="Mazda"></option><option value="Mitsubishi"></option><option value="Subaru"></option><option value="Suzuki"></option><option value="Isuzu"></option><option value="Lexus"></option><option value="Volkswagen"></option><option value="Mercedes-Benz"></option><option value="BMW"></option><option value="Ford"></option><option value="Hyundai"></option><option value="Kia"></option></datalist>
+          </div>
+          <div class="cl-form-group">
+            <label for="i-model">Model</label>
+            <input id="i-model" type="text" maxlength="60" placeholder="Hilux" />
+          </div>
+          <div class="cl-form-group">
+            <label for="i-grade">Grade <span class="cl-optional">(optional)</span></label>
+            <input id="i-grade" type="text" maxlength="60" placeholder="2.4 GD-6 Raider" />
+          </div>
+        </div>
+        <div class="cl-form-row cl-form-row-3">
+          <div class="cl-form-group">
+            <label for="i-year">Year</label>
+            <input id="i-year" type="number" min="1950" max="2100" step="1" placeholder="2018" />
+          </div>
+          <div class="cl-form-group">
+            <label for="i-km">Mileage (km)</label>
+            <input id="i-km" type="number" min="0" step="1" placeholder="85000" />
+          </div>
+          <div class="cl-form-group">
+            <label for="i-cc">Engine (cc)</label>
+            <input id="i-cc" type="number" min="0" step="1" placeholder="2400" />
+          </div>
+        </div>
+        <div class="cl-form-row cl-form-row-3">
+          <div class="cl-form-group">
+            <label for="i-chassis">Chassis number</label>
+            <input id="i-chassis" type="text" maxlength="40" placeholder="GUN126-1234567" />
+          </div>
+          <div class="cl-form-group">
+            <label for="i-color">Colour</label>
+            <input id="i-color" type="text" maxlength="40" placeholder="White" />
+          </div>
+          <div class="cl-form-group">
+            <label for="i-condition">Condition</label>
+            <select id="i-condition">
+              <option value="">Not graded</option>
+              <option value="good">Good</option>
+              <option value="very_good">Very good</option>
+              <option value="excellent">Excellent</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="cl-form-group" id="i-name-group" hidden>
+        <label for="i-name">Name</label>
+        <input id="i-name" type="text" maxlength="150" placeholder="e.g. Tyre 265/65R17 all-terrain" />
+      </div>
+      <div class="cl-form-row">
+        <div class="cl-form-group">
+          <label for="i-sku">Stock code <span class="cl-optional">(optional)</span></label>
+          <input id="i-sku" type="text" maxlength="60" placeholder="e.g. HLX-1801" />
+        </div>
+        <div class="cl-form-group">
+          <label for="i-category">Category</label>
+          <input id="i-category" type="text" maxlength="60" list="item-categories" placeholder="e.g. Vehicles" />
+          <datalist id="item-categories"></datalist>
+        </div>
+      </div>
+      <div class="cl-form-row">
+        <div class="cl-form-group">
+          <label for="i-price">Price <span class="cl-optional" id="i-currency">(N$)</span></label>
+          <input id="i-price" type="text" inputmode="decimal" placeholder="289000" required />
+        </div>
+        <div class="cl-form-group" id="i-qty-group">
+          <label for="i-qty">Quantity in stock</label>
+          <input id="i-qty" type="number" min="0" step="1" value="1" />
+        </div>
+      </div>
+      <div class="cl-form-group">
+        <label for="i-low">Warn me when stock is at or below</label>
+        <input id="i-low" type="number" min="0" step="1" value="1" />
+      </div>
+      <div class="cl-form-group">
+        <label for="i-notes">Notes <span class="cl-optional">(only you see these)</span></label>
+        <textarea id="i-notes" rows="2" maxlength="2000" placeholder="Supplier, condition, location in the yard…"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" id="item-save">Save item</button>
+    </form>
+
+    <div id="item-stock-section" hidden>
+      <h3>Update stock</h3>
+      <p class="cl-stock-now">In stock now: <strong id="item-qty-now">0</strong></p>
+      <form class="cl-form-plain" id="stock-form" novalidate>
+        <p class="cl-form-status" role="status" hidden></p>
+        <div class="cl-form-row">
+          <div class="cl-form-group">
+            <label for="s-change">Add or remove</label>
+            <input id="s-change" type="number" step="1" placeholder="3 or -2" required />
+          </div>
+          <div class="cl-form-group">
+            <label for="s-reason">Reason <span class="cl-optional">(optional)</span></label>
+            <input id="s-reason" type="text" maxlength="200" placeholder="New shipment, damaged…" />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-outline">Update stock</button>
+      </form>
+      <h3>Stock history</h3>
+      <ul class="cl-list" id="item-moves"></ul>
+      <div class="cl-drawer-danger">
+        <button type="button" class="btn btn-danger" id="item-delete">Delete item</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- New invoice drawer -->
+  <aside class="cl-drawer cl-drawer-wide" id="invoice-drawer" role="dialog" aria-modal="true" aria-labelledby="invoice-drawer-title" hidden>
+    <button type="button" class="cl-search-modal-close" data-close-drawer aria-label="Close">&times;</button>
+    <h2 id="invoice-drawer-title">New invoice</h2>
+    <form class="cl-form-plain" id="invoice-form" novalidate>
+      <h3>Bill to</h3>
+      <div class="cl-form-group">
+        <label for="b-customer">Customer</label>
+        <select id="b-customer"><option value="">Someone without an account</option></select>
+      </div>
+      <div class="cl-form-row">
+        <div class="cl-form-group">
+          <label for="b-name">Name</label>
+          <input id="b-name" type="text" maxlength="120" required />
+        </div>
+        <div class="cl-form-group">
+          <label for="b-company">Company <span class="cl-optional">(optional)</span></label>
+          <input id="b-company" type="text" maxlength="120" />
+        </div>
+      </div>
+      <div class="cl-form-row">
+        <div class="cl-form-group">
+          <label for="b-email">Email</label>
+          <input id="b-email" type="email" maxlength="190" />
+        </div>
+        <div class="cl-form-group">
+          <label for="b-phone">Phone</label>
+          <input id="b-phone" type="tel" maxlength="40" />
+        </div>
+      </div>
+      <div class="cl-form-group">
+        <label for="b-address">Address <span class="cl-optional">(optional)</span></label>
+        <textarea id="b-address" rows="2" maxlength="300"></textarea>
+      </div>
+
+      <h3>Lines</h3>
+      <div id="invoice-lines" class="cl-lines"></div>
+      <button type="button" class="cl-linkbtn" id="line-add">+ Add a line</button>
+
+      <h3>Dates and VAT</h3>
+      <div class="cl-form-row cl-form-row-3">
+        <div class="cl-form-group">
+          <label for="b-issue">Invoice date</label>
+          <input id="b-issue" type="date" required />
+        </div>
+        <div class="cl-form-group">
+          <label for="b-due">Due date</label>
+          <input id="b-due" type="date" required />
+        </div>
+        <div class="cl-form-group">
+          <label for="b-vat">VAT %</label>
+          <input id="b-vat" type="number" min="0" max="100" step="0.01" value="15" />
+        </div>
+      </div>
+      <div class="cl-form-group">
+        <label for="b-notes">Note on the invoice <span class="cl-optional">(optional)</span></label>
+        <textarea id="b-notes" rows="2" maxlength="1000" placeholder="Payment terms, vessel name, container number…"></textarea>
+      </div>
+
+      <dl class="cl-totals">
+        <dt>Subtotal</dt><dd id="t-sub">0.00</dd>
+        <dt id="t-vat-label">VAT 15%</dt><dd id="t-vat">0.00</dd>
+        <dt class="cl-totals-grand">Total</dt><dd class="cl-totals-grand" id="t-total">0.00</dd>
+      </dl>
+      <p class="cl-form-status" role="status" hidden></p>
+      <p class="cl-muted cl-small">Lines picked from inventory are taken out of stock when you create the invoice. Cancelling the invoice puts them back.</p>
+      <button type="submit" class="btn btn-primary btn-full">Create invoice</button>
+    </form>
+  </aside>
+
   <footer class="cl-footer">
     <div class="cl-shell cl-footer-inner">
       <p>IT Import &amp; Export CC — Customs Clearing &amp; Freight Forwarding, Walvis Bay.</p>
@@ -213,7 +590,10 @@
     </div>
   </footer>
 
-  <script src="/main.js"></script>
-  <script src="/assets/admin.js"></script>
+  <script src="/main.js?v=billing3"></script>
+  <script src="/assets/countries.js?v=billing3"></script>
+  <script src="/assets/admin.js?v=billing3"></script>
+  <script src="/assets/calc.js?v=billing3"></script>
+  <script src="/assets/admin-billing.js?v=billing3"></script>
 </body>
 </html>

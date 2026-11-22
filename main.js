@@ -269,3 +269,11 @@ if (quoteForm) {
     }
   });
 }
+
+// "Estimate clearing costs" buttons (Clearing, Vehicles) only show once the
+// admin has switched the calculator on, so nobody lands on an empty page.
+if (document.querySelector("[data-calc-link]")) {
+  ITIE.post("calculator").then((r) => {
+    if (r.enabled) document.querySelectorAll("[data-calc-link]").forEach((a) => { a.hidden = false; });
+  }).catch(() => { /* leave them hidden */ });
+}

@@ -117,10 +117,88 @@ function migrate(PDO $pdo): void
             k  TEXT NOT NULL,
             at INTEGER NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS items (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            name        TEXT NOT NULL,
+            sku         TEXT NOT NULL DEFAULT '',
+            category    TEXT NOT NULL DEFAULT '',
+            price_cents INTEGER NOT NULL DEFAULT 0,
+            quantity    INTEGER NOT NULL DEFAULT 0,
+            low_stock   INTEGER NOT NULL DEFAULT 1,
+            notes       TEXT NOT NULL DEFAULT '',
+            created_at  INTEGER NOT NULL,
+            updated_at  INTEGER NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS stock_moves (
+            id             INTEGER PRIMARY KEY AUTOINCREMENT,
+            item_id        INTEGER NOT NULL REFERENCES items(id) ON DELETE CASCADE,
+            change         INTEGER NOT NULL,
+            quantity_after INTEGER NOT NULL,
+            reason         TEXT NOT NULL DEFAULT '',
+            created_at     INTEGER NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS invoices (
+            id             INTEGER PRIMARY KEY AUTOINCREMENT,
+            number         TEXT NOT NULL UNIQUE,
+            user_id        INTEGER REFERENCES users(id) ON DELETE SET NULL,
+            bill_name      TEXT NOT NULL,
+            bill_company   TEXT NOT NULL DEFAULT '',
+            bill_email     TEXT NOT NULL DEFAULT '',
+            bill_phone     TEXT NOT NULL DEFAULT '',
+            bill_address   TEXT NOT NULL DEFAULT '',
+            issue_date     TEXT NOT NULL,
+            due_date       TEXT NOT NULL,
+            vat_rate       REAL NOT NULL DEFAULT 15,
+            subtotal_cents INTEGER NOT NULL,
+            vat_cents      INTEGER NOT NULL,
+            total_cents    INTEGER NOT NULL,
+            notes          TEXT NOT NULL DEFAULT '',
+            status         TEXT NOT NULL DEFAULT 'unpaid',
+            paid_at        INTEGER,
+            created_at     INTEGER NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS invoice_lines (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            invoice_id  INTEGER NOT NULL REFERENCES invoices(id) ON DELETE CASCADE,
+            item_id     INTEGER REFERENCES items(id) ON DELETE SET NULL,
+            description TEXT NOT NULL,
+            qty         INTEGER NOT NULL,
+            unit_cents  INTEGER NOT NULL,
+            line_cents  INTEGER NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS settings (
+            k TEXT PRIMARY KEY,
+            v TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS calc_lines (
+            id           INTEGER PRIMARY KEY AUTOINCREMENT,
+            position     INTEGER NOT NULL DEFAULT 0,
+            label        TEXT NOT NULL,
+            kind         TEXT NOT NULL,
+            rate         REAL NOT NULL DEFAULT 0,
+            amount_cents INTEGER NOT NULL DEFAULT 0
+        );
         CREATE INDEX IF NOT EXISTS idx_attempts_k ON attempts(k, at);
+        CREATE INDEX IF NOT EXISTS idx_moves_item ON stock_moves(item_id, created_at);
+        CREATE INDEX IF NOT EXISTS idx_lines_invoice ON invoice_lines(invoice_id);
+        CREATE INDEX IF NOT EXISTS idx_invoices_user ON invoices(user_id, created_at);
         CREATE INDEX IF NOT EXISTS idx_activity_user ON activity(user_id, created_at);
         CREATE INDEX IF NOT EXISTS idx_quotes_user ON quotes(user_id, created_at);
     ");
+
+    // Columns added after the first release. Existing databases get them on the next request.
+    add_columns($pdo, 'items', [
+        'kind' => "TEXT NOT NULL DEFAULT 'other'",
+        'make' => "TEXT NOT NULL DEFAULT ''",
+        'model' => "TEXT NOT NULL DEFAULT ''",
+        'grade' => "TEXT NOT NULL DEFAULT ''",
+        'year' => 'INTEGER',
+        'mileage_km' => 'INTEGER',
+        'engine_cc' => 'INTEGER',
+        'chassis_no' => "TEXT NOT NULL DEFAULT ''",
+        'color' => "TEXT NOT NULL DEFAULT ''",
+        'condition' => "TEXT NOT NULL DEFAULT ''",
+    ]);
 
     // First run: create the admin login from config.
     $hasAdmin = (int) $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'admin'")->fetchColumn();
@@ -130,6 +208,32 @@ function migrate(PDO $pdo): void
         $pdo->prepare("INSERT INTO users (role, name, email, pass, created_at, last_seen) VALUES ('admin', ?, ?, ?, ?, ?)")
             ->execute([$cfg['admin_name'] ?? 'Admin', strtolower($cfg['admin_email']), $cfg['admin_password_hash'], $now, $now]);
     }
+}
+
+function add_columns(PDO $pdo, string $table, array $columns): void
+{
+    $have = array_column($pdo->query("PRAGMA table_info($table)")->fetchAll(), 'name');
+    foreach ($columns as $name => $definition) {
+        if (!in_array($name, $have, true)) {
+            $pdo->exec("ALTER TABLE $table ADD COLUMN \"$name\" $definition");
+        }
+    }
+}
+
+// ── Settings (editable from the admin page) ────────────────────────────────
+
+function setting(string $key, ?string $default = null): ?string
+{
+    static $all = null;
+    if ($all === null) {
+        $all = db()->query('SELECT k, v FROM settings')->fetchAll(PDO::FETCH_KEY_PAIR);
+    }
+    return array_key_exists($key, $all) ? $all[$key] : $default;
+}
+
+function save_setting(string $key, string $value): void
+{
+    db()->prepare('INSERT INTO settings (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v')->execute([$key, $value]);
 }
 
 // ── Session + CSRF ─────────────────────────────────────────────────────────
@@ -235,6 +339,69 @@ function valid_email(string $email): bool
     return (bool) filter_var($email, FILTER_VALIDATE_EMAIL);
 }
 
+/** A money amount ("289000", "289,000.50" or a number) as whole cents, or null if it isn't one. */
+function money_cents($value): ?int
+{
+    if (is_int($value) || is_float($value)) $value = (string) $value;
+    if (!is_string($value)) return null;
+    $value = str_replace([',', ' ', 'N$'], '', trim($value));
+    if ($value === '' || !preg_match('/^\d{1,10}(\.\d{1,2})?$/', $value)) return null;
+    return (int) round(((float) $value) * 100);
+}
+
+/** A whole number from the request body (ints or numeric strings), or null. */
+function int_field(string $name): ?int
+{
+    $value = body()[$name] ?? null;
+    if (is_int($value)) return $value;
+    if (is_string($value) && preg_match('/^-?\d{1,9}$/', trim($value))) return (int) trim($value);
+    return null;
+}
+
+/** A YYYY-MM-DD date from the request body, or '' if missing or invalid. */
+function date_field(string $name): string
+{
+    $value = field($name, 10);
+    $d = DateTime::createFromFormat('!Y-m-d', $value);
+    return $d && $d->format('Y-m-d') === $value ? $value : '';
+}
+
+/** The seller details printed on invoices: Admin > Settings first, then config.php, then defaults. */
+function business(): array
+{
+    $cfg = config();
+    $pick = function (string $key, string $cfgKey, string $default) use ($cfg): string {
+        $v = setting($key);
+        if ($v !== null && $v !== '') return $v;
+        return (string) ($cfg[$cfgKey] ?? $default);
+    };
+    return [
+        'name' => $pick('business_name', 'business_name', 'IT Import & Export CC'),
+        'address' => $pick('business_address', 'business_address', "Walvis Bay\nNamibia"),
+        'phone' => $pick('business_phone', 'business_phone', ''),
+        'email' => $pick('business_email', 'business_email', (string) ($cfg['notify_email'] ?? '')),
+        'vat_number' => $pick('business_vat_number', 'business_vat_number', ''),
+        'bank' => $pick('business_bank', 'business_bank_details', ''),
+        'currency' => $pick('currency', 'currency', 'N$'),
+        'vat_rate' => (float) $pick('default_vat_rate', 'default_vat_rate', '15'),
+    ];
+}
+
+/** Changes an item's stock by $change and records why. Fails if it would go below zero. */
+function move_stock(int $itemId, int $change, string $reason): int
+{
+    $stmt = db()->prepare('SELECT name, quantity FROM items WHERE id = ?');
+    $stmt->execute([$itemId]);
+    $item = $stmt->fetch();
+    if (!$item) fail(404, 'Item not found.');
+    $after = (int) $item['quantity'] + $change;
+    if ($after < 0) fail(422, "Only {$item['quantity']} of \"{$item['name']}\" in stock.");
+    db()->prepare('UPDATE items SET quantity = ?, updated_at = ? WHERE id = ?')->execute([$after, time(), $itemId]);
+    db()->prepare('INSERT INTO stock_moves (item_id, change, quantity_after, reason, created_at) VALUES (?, ?, ?, ?, ?)')
+        ->execute([$itemId, $change, $after, $reason, time()]);
+    return $after;
+}
+
 // ── Rate limits ────────────────────────────────────────────────────────────
 
 function client_ip(): string
@@ -285,7 +452,7 @@ function public_user(array $user): array
         'id' => (int) $user['id'],
         'role' => $user['role'],
         'name' => $user['name'],
-        'email' => $user['email'],
+        'email' => is_placeholder_email($user['email']) ? '' : $user['email'],
         'phone' => $user['phone'],
         'company' => $user['company'],
         'country' => $user['country'],
@@ -295,10 +462,23 @@ function public_user(array $user): array
     ];
 }
 
+/** Customers the admin adds without an email get a unique stand-in address that never receives mail. */
+const NO_EMAIL_DOMAIN = '@no-email.invalid';
+
+function is_placeholder_email(string $email): bool
+{
+    return str_ends_with($email, NO_EMAIL_DOMAIN);
+}
+
+function placeholder_email(): string
+{
+    return 'customer-' . bin2hex(random_bytes(6)) . NO_EMAIL_DOMAIN;
+}
+
 function send_mail(string $to, string $subject, string $body, string $replyTo = ''): bool
 {
     $cfg = config();
-    if (empty($cfg['mail_from']) || !valid_email($to)) return false;
+    if (empty($cfg['mail_from']) || !valid_email($to) || is_placeholder_email($to)) return false;
     $headers = [
         'From: ' . ($cfg['mail_from_name'] ?? 'IT Import & Export') . ' <' . $cfg['mail_from'] . '>',
         'Content-Type: text/plain; charset=UTF-8',
