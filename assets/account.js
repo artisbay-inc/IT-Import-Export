@@ -87,9 +87,29 @@
   ITIE_COUNTRY.link($("#profile-country"), $("#profile-phone"));
 
   async function showProfile(user) {
-    // The admin's profile lives on the admin page, not here.
+    // The admin has no customer profile. Say so (instead of jumping to /admin),
+    // so an admin who wants to try a customer account knows to sign out first.
     if (user.role === "admin") {
-      window.location.replace("/admin");
+      setAccountLink(user);
+      show("signin");
+      const box = $("#signin-form .cl-form-status");
+      box.replaceChildren(`You are signed in as the admin (${user.email}). To use a customer account, sign out first. `);
+      const go = document.createElement("a");
+      go.href = "/admin";
+      go.className = "cl-linkbtn";
+      go.textContent = "Go to the admin page";
+      const out = document.createElement("button");
+      out.type = "button";
+      out.className = "cl-linkbtn";
+      out.id = "admin-signout";
+      out.textContent = "Sign out";
+      out.addEventListener("click", async () => {
+        try { await ITIE.post("signout"); } catch (e) { /* signed out locally either way */ }
+        window.location.reload();
+      });
+      box.append(go, " · ", out);
+      box.className = "cl-form-status is-ok";
+      box.hidden = false;
       return;
     }
     setAccountLink(user);
