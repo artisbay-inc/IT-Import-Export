@@ -27,6 +27,10 @@ return [
     // Used to build links in emails (no trailing slash).
     'site_url' => 'https://example.com',
 
+    // Test sites with no email only: show the sign-up code on screen.
+    // Leave false (or remove) on the real site.
+    'show_email_codes' => false,
+
     // Printed at the top and bottom of every invoice. All optional.
     'business_name' => 'IT Import & Export CC',
     'business_address' => "Walvis Bay\nNamibia",

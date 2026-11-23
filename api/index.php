@@ -7,7 +7,7 @@
  *                                            X-CSRF-Token header required)
  *
  * Customer actions: signup, signin, signout, profile, password, forgot,
- * reset, my_activity, quote. Admin actions start with admin_.
+ * reset, verify_email, resend_code, my_activity, quote. Admin actions start with admin_.
  */
 
 declare(strict_types=1);
@@ -41,6 +41,7 @@ switch ($action) {
 
         if ($name === '') fail(422, 'Please enter your name.');
         if (!valid_email($email)) fail(422, 'Please enter a valid email address.');
+        if ($phone === '') fail(422, 'Please enter your phone number.');
         if (strlen($password) < 8) fail(422, 'Your password needs 8 characters or more.');
         if (too_many('signup:' . client_ip(), 10, 3600)) fail(429, 'Too many sign-ups from here. Please try again later.');
         record_attempt('signup:' . client_ip());
@@ -50,7 +51,7 @@ switch ($action) {
         if ($exists->fetchColumn()) fail(409, "There's already an account with that email. Try signing in.");
 
         $now = time();
-        db()->prepare('INSERT INTO users (role, name, email, phone, company, country, pass, created_at, last_seen) VALUES (\'customer\', ?, ?, ?, ?, ?, ?, ?, ?)')
+        db()->prepare('INSERT INTO users (role, name, email, phone, company, country, pass, created_at, last_seen, email_verified) VALUES (\'customer\', ?, ?, ?, ?, ?, ?, ?, ?, 0)')
             ->execute([$name, $email, $phone, $company, field('country', 80), password_hash($password, PASSWORD_DEFAULT), $now, $now]);
         $id = (int) db()->lastInsertId();
         // Earlier quote requests sent with this email now belong to the account.
@@ -61,7 +62,40 @@ switch ($action) {
         $stmt->execute([$id]);
         $user = $stmt->fetch();
         sign_in($user);
-        respond(['user' => public_user($user), 'csrf' => $_SESSION['csrf']]);
+        $testCode = send_email_code($user);
+        respond(['user' => public_user($user), 'csrf' => $_SESSION['csrf']] + ($testCode ? ['test_code' => $testCode] : []));
+    }
+
+    case 'verify_email': {
+        $user = current_user();
+        if (!$user) fail(401, 'Please sign in.');
+        if ((int) $user['email_verified']) respond(['user' => public_user($user)]);
+        $code = preg_replace('/\D/', '', field('code', 20));
+        $stmt = db()->prepare('SELECT * FROM email_codes WHERE user_id = ?');
+        $stmt->execute([$user['id']]);
+        $row = $stmt->fetch();
+        if (!$row || $row['expires_at'] < time() || $row['tries'] >= 5) {
+            fail(400, 'This code has expired. Press "Send a new code".');
+        }
+        if (!hash_equals($row['code_hash'], hash('sha256', $user['id'] . ':' . $code))) {
+            db()->prepare('UPDATE email_codes SET tries = tries + 1 WHERE user_id = ?')->execute([$user['id']]);
+            $left = 4 - (int) $row['tries'];
+            fail(422, $left > 0 ? "That code is not right. $left " . ($left === 1 ? 'try' : 'tries') . ' left.' : 'That code is not right. Press "Send a new code".');
+        }
+        db()->prepare('UPDATE users SET email_verified = 1 WHERE id = ?')->execute([$user['id']]);
+        db()->prepare('DELETE FROM email_codes WHERE user_id = ?')->execute([$user['id']]);
+        log_activity((int) $user['id'], 'Confirmed their email');
+        respond(['user' => public_user(require_user())]);
+    }
+
+    case 'resend_code': {
+        $user = current_user();
+        if (!$user) fail(401, 'Please sign in.');
+        if ((int) $user['email_verified']) respond(['message' => 'Your email is already confirmed.']);
+        if (too_many('code:' . $user['id'], 5, 3600)) fail(429, 'Too many codes sent. Please try again in an hour.');
+        record_attempt('code:' . $user['id']);
+        $testCode = send_email_code($user);
+        respond(['message' => 'A new code is on its way to ' . $user['email'] . '.'] + ($testCode ? ['test_code' => $testCode] : []));
     }
 
     case 'signin': {
@@ -104,8 +138,12 @@ switch ($action) {
         $user = require_user();
         $name = field('name', 100);
         if ($name === '') fail(422, 'Please enter your name.');
+        // The phone number (like the email) is locked once set, so someone who
+        // steals the password can't take over the account's contact details.
+        // The admin can still change both.
+        $phone = $user['phone'] !== '' ? $user['phone'] : phone_field();
         db()->prepare('UPDATE users SET name = ?, phone = ?, company = ?, country = ?, city = ? WHERE id = ?')
-            ->execute([$name, phone_field(), field('company', 120), field('country', 80), field('city', 80), $user['id']]);
+            ->execute([$name, $phone, field('company', 120), field('country', 80), field('city', 80), $user['id']]);
         log_activity((int) $user['id'], 'Updated their details');
         respond(['user' => public_user(require_user())]);
     }
@@ -154,7 +192,8 @@ switch ($action) {
         $stmt->execute([hash('sha256', $token), time()]);
         $userId = $stmt->fetchColumn();
         if (!$userId) fail(400, 'This reset link has expired or was already used. Please ask for a new one.');
-        db()->prepare('UPDATE users SET pass = ? WHERE id = ?')->execute([password_hash($password, PASSWORD_DEFAULT), $userId]);
+        // The link arrived by email, so this also confirms the email.
+        db()->prepare('UPDATE users SET pass = ?, email_verified = 1 WHERE id = ?')->execute([password_hash($password, PASSWORD_DEFAULT), $userId]);
         db()->prepare('DELETE FROM resets WHERE user_id = ?')->execute([$userId]);
         log_activity((int) $userId, 'Reset their password');
         respond(['message' => 'Your password is changed. You can sign in now.']);
@@ -308,6 +347,17 @@ switch ($action) {
         $note = text_field('note', 2000);
         if ($note !== '') db()->prepare('INSERT INTO notes (user_id, text, created_at) VALUES (?, ?, ?)')->execute([$id, $note, $now]);
         respond(['id' => $id]);
+    }
+
+    case 'admin_customer_verify': {
+        require_admin();
+        $id = (int) (body()['id'] ?? 0);
+        $stmt = db()->prepare("UPDATE users SET email_verified = 1 WHERE id = ? AND role = 'customer'");
+        $stmt->execute([$id]);
+        if (!$stmt->rowCount()) fail(404, 'Customer not found.');
+        db()->prepare('DELETE FROM email_codes WHERE user_id = ?')->execute([$id]);
+        log_activity($id, 'Email confirmed by the admin');
+        respond([]);
     }
 
     case 'admin_customer_delete': {

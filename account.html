@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.v2.css?v=billing5" />
+  <link rel="stylesheet" href="/styles.v2.css?v=billing6" />
   <script>/* Theme before first paint: saved choice, else the system setting. */
   (function(){var t;try{t=localStorage.getItem('iti-theme');}catch(e){}if(t!=='light'&&t!=='dark')t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
@@ -87,8 +87,8 @@
               <select id="signup-country" autocomplete="country-name"></select>
             </div>
             <div class="cl-form-group">
-              <label for="signup-phone">Phone <span class="cl-optional">(optional)</span></label>
-              <input id="signup-phone" type="tel" autocomplete="tel" maxlength="40" />
+              <label for="signup-phone">Phone</label>
+              <input id="signup-phone" type="tel" autocomplete="tel" maxlength="40" required />
             </div>
           </div>
           <div class="cl-form-group">
@@ -139,6 +139,24 @@
         </form>
       </div>
 
+      <!-- Confirm the email with the code we sent -->
+      <div class="cl-auth" data-view="verify" hidden>
+        <form class="cl-form" id="verify-form" novalidate>
+          <h2>Check your email</h2>
+          <p class="cl-form-hint">We sent a 6-digit code to <strong id="verify-email"></strong>. Enter it below to finish creating your account.</p>
+          <p class="cl-form-status" role="status" hidden></p>
+          <div class="cl-form-group">
+            <label for="verify-code">Code</label>
+            <input id="verify-code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]{6,7}" maxlength="7" required />
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Confirm my email</button>
+          <div class="cl-form-links">
+            <button type="button" class="cl-linkbtn" id="verify-resend">Send a new code</button>
+            <button type="button" class="cl-linkbtn" id="verify-signout">Sign out</button>
+          </div>
+        </form>
+      </div>
+
       <!-- Profile -->
       <div data-view="profile" hidden>
         <div class="cl-account-bar">
@@ -172,6 +190,7 @@
                 <div class="cl-form-group">
                   <label for="profile-phone">Phone</label>
                   <input id="profile-phone" type="tel" autocomplete="tel" maxlength="40" />
+                  <p class="cl-form-hint" id="profile-locked" hidden>To change your phone number or email, please contact us.</p>
                 </div>
                 <div class="cl-form-group">
                   <label for="profile-company">Company</label>
@@ -199,11 +218,6 @@
           </div>
 
           <div class="cl-card">
-            <h2>Your quote requests</h2>
-            <ul class="cl-list" id="profile-quotes"></ul>
-          </div>
-
-          <div class="cl-card">
             <h2>Recent activity</h2>
             <ul class="cl-list" id="profile-activity"></ul>
           </div>
@@ -219,8 +233,8 @@
     </div>
   </footer>
 
-  <script src="/main.js?v=billing5"></script>
-  <script src="/assets/countries.js?v=billing5"></script>
-  <script src="/assets/account.js?v=billing5"></script>
+  <script src="/main.js?v=billing6"></script>
+  <script src="/assets/countries.js?v=billing6"></script>
+  <script src="/assets/account.js?v=billing6"></script>
 </body>
 </html>

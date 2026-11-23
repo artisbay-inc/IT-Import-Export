@@ -72,7 +72,7 @@
   function link(select, phone) {
     select.addEventListener("change", () => {
       const dial = dialOf(select.value);
-      if (!dial) return;
+      if (!dial || phone.readOnly) return;
       const current = phone.value.trim();
       // Replace an empty box or a box that only has another country's code (+27, +264 …).
       const prefix = current.match(/^\+\d{1,4}/);

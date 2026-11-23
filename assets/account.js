@@ -9,11 +9,12 @@
   const val = (sel) => $(sel).value.trim();
 
   const HEADINGS = {
-    signin: ["Sign In", "Sign in to see your quote requests and keep your details up to date."],
+    signin: ["Sign In", "Sign in to keep your details up to date and send quote requests faster."],
     signup: ["Create Your Account", "One account for all your clearing and forwarding requests."],
     forgot: ["Reset Your Password", "We'll email you a link to choose a new one."],
     reset: ["Choose a New Password", "Pick a password with 8 characters or more."],
-    profile: ["My Account", "Your details, your quote requests and what's happened on your account."],
+    verify: ["Confirm Your Email", "One last step: enter the code we emailed you."],
+    profile: ["My Account", "Your details and what's happened on your account."],
   };
 
   function show(name) {
@@ -113,21 +114,22 @@
       return;
     }
     setAccountLink(user);
+    if (!user.email_verified) return showVerify(user);
     $("#profile-email").textContent = user.email;
     $("#profile-name").value = user.name;
     $("#profile-phone").value = user.phone;
+    // Phone (like email) can't be changed by the customer once it is set.
+    $("#profile-phone").readOnly = !!user.phone;
+    $("#profile-locked").hidden = !user.phone;
     $("#profile-company").value = user.company;
     ITIE_COUNTRY.setValue($("#profile-country"), user.country);
     $("#profile-city").value = user.city;
     show("profile");
     try {
-      const { quotes, activity } = await ITIE.post("my_activity");
-      listItems($("#profile-quotes"), quotes, "No quote requests yet.", (q) =>
-        row(`${q.destination}${q.details ? ` · ${q.details.slice(0, 80)}` : ""}`, ITIE.date(q.created_at),
-          q.status === "done" ? { kind: "done", text: "Handled" } : { kind: "new", text: "Received" }));
+      const { activity } = await ITIE.post("my_activity");
       listItems($("#profile-activity"), activity, "Nothing yet.", (a) => row(a.text, ITIE.dateTime(a.created_at)));
     } catch (err) {
-      listItems($("#profile-quotes"), [], err.message, () => null);
+      listItems($("#profile-activity"), [], err.message, () => null);
     }
   }
 
@@ -142,7 +144,7 @@
   });
 
   handle($("#signup-form"), async () => {
-    const { user } = await ITIE.post("signup", {
+    const { user, test_code: testCode } = await ITIE.post("signup", {
       name: val("#signup-name"),
       email: val("#signup-email"),
       phone: val("#signup-phone"),
@@ -151,8 +153,36 @@
       password: $("#signup-password").value,
     });
     $("#signup-password").value = "";
+    showVerify(user, testCode);
+  });
+
+  // ── Confirm the email with the 6-digit code ──
+  function showVerify(user, testCode) {
+    $("#verify-email").textContent = user.email;
+    $("#verify-code").value = "";
+    show("verify");
+    // Only a test site without email sends the code back (config show_email_codes).
+    setFormStatus($("#verify-form"), testCode ? `Test site (no email here): your code is ${testCode}` : "", "ok");
+  }
+
+  handle($("#verify-form"), async () => {
+    const { user } = await ITIE.post("verify_email", { code: val("#verify-code") });
     await showProfile(user);
-    setFormStatus($("#profile-form"), "Welcome! Your account is ready.", "ok");
+    setFormStatus($("#profile-form"), "Welcome! Your email is confirmed and your account is ready.", "ok");
+  });
+
+  $("#verify-resend").addEventListener("click", async () => {
+    try {
+      const r = await ITIE.post("resend_code");
+      setFormStatus($("#verify-form"), r.test_code ? `${r.message} Test site: your code is ${r.test_code}` : r.message, "ok");
+    } catch (err) {
+      setFormStatus($("#verify-form"), err.message, "error");
+    }
+  });
+
+  $("#verify-signout").addEventListener("click", async () => {
+    try { await ITIE.post("signout"); } catch (e) { /* signed out locally either way */ }
+    window.location.href = "/account";
   });
 
   handle($("#forgot-form"), async () => {

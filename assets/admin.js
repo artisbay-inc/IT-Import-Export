@@ -122,7 +122,7 @@
         row.type = "button";
         row.append(
           el("span", "cl-td-name", c.name),
-          el("span", "", c.email || "—"),
+          el("span", "", c.email ? (c.email_verified ? c.email : `${c.email} (not confirmed)`) : "—"),
           el("span", "", c.phone || "—"),
           el("span", "", c.company || "—"),
           el("span", "", ITIE.date(c.created_at)),
@@ -163,6 +163,22 @@
       const { customer: c, notes, activity, quotes } = await ITIE.post("admin_customer", { id });
       $("#drawer-name").textContent = c.name;
       $("#drawer-meta").textContent = `Joined ${ITIE.date(c.created_at)} · ${c.last_seen ? `last active ${ITIE.ago(c.last_seen).toLowerCase()}` : "has not signed in yet"}`;
+      if (c.email && !c.email_verified) {
+        // e.g. the code email went to spam: the admin can confirm it by hand.
+        const confirm = el("button", "cl-linkbtn", "Mark email as confirmed");
+        confirm.type = "button";
+        confirm.id = "drawer-verify";
+        confirm.addEventListener("click", async () => {
+          try {
+            await ITIE.post("admin_customer_verify", { id });
+            openCustomer(id);
+            loadCustomers();
+          } catch (err) {
+            setFormStatus($("#drawer-form"), err.message, "error");
+          }
+        });
+        $("#drawer-meta").append(" · Email not confirmed yet · ", confirm);
+      }
       $("#d-name").value = c.name;
       $("#d-email").value = c.email;
       $("#d-phone").value = c.phone;

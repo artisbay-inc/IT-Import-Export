@@ -108,6 +108,12 @@ function migrate(PDO $pdo): void
             status      TEXT NOT NULL DEFAULT 'new',
             created_at  INTEGER NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS email_codes (
+            user_id    INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+            code_hash  TEXT NOT NULL,
+            expires_at INTEGER NOT NULL,
+            tries      INTEGER NOT NULL DEFAULT 0
+        );
         CREATE TABLE IF NOT EXISTS resets (
             token_hash TEXT PRIMARY KEY,
             user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -188,6 +194,8 @@ function migrate(PDO $pdo): void
 
     // Columns added after the first release. Existing databases get them on the next request.
     add_columns($pdo, 'quotes', ['country' => "TEXT NOT NULL DEFAULT ''"]);
+    // Accounts made before email codes existed (and by the admin) count as confirmed.
+    add_columns($pdo, 'users', ['email_verified' => 'INTEGER NOT NULL DEFAULT 1']);
     add_columns($pdo, 'items', [
         'kind' => "TEXT NOT NULL DEFAULT 'other'",
         'make' => "TEXT NOT NULL DEFAULT ''",
@@ -283,7 +291,27 @@ function require_user(): array
 {
     $user = current_user();
     if (!$user) fail(401, 'Please sign in.');
+    if ($user['role'] === 'customer' && !(int) $user['email_verified']) {
+        fail(403, 'Please confirm your email first. We sent you a code.');
+    }
     return $user;
+}
+
+/**
+ * Emails a new 6-digit code that confirms the account's email (15 minutes,
+ * 5 tries). Returns the code only when config 'show_email_codes' is on — a
+ * test site without email; never set it on the real site.
+ */
+function send_email_code(array $user): ?string
+{
+    $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+    db()->prepare('INSERT OR REPLACE INTO email_codes (user_id, code_hash, expires_at, tries) VALUES (?, ?, ?, 0)')
+        ->execute([$user['id'], hash('sha256', $user['id'] . ':' . $code), time() + 900]);
+    send_mail($user['email'], 'Your confirmation code: ' . $code,
+        "Hello {$user['name']},\n\nYour code to confirm your email is:\n\n    $code\n\n"
+        . "It works for 15 minutes. If you did not create an account, you can ignore this email.\n\n"
+        . business()['name']);
+    return !empty(config()['show_email_codes']) ? $code : null;
 }
 
 function require_admin(): array
@@ -465,6 +493,7 @@ function public_user(array $user): array
         'company' => $user['company'],
         'country' => $user['country'],
         'city' => $user['city'],
+        'email_verified' => (bool) (int) ($user['email_verified'] ?? 1),
         'created_at' => (int) $user['created_at'],
         'last_seen' => (int) $user['last_seen'],
     ];
