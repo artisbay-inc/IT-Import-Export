@@ -187,6 +187,7 @@ function migrate(PDO $pdo): void
     ");
 
     // Columns added after the first release. Existing databases get them on the next request.
+    add_columns($pdo, 'quotes', ['country' => "TEXT NOT NULL DEFAULT ''"]);
     add_columns($pdo, 'items', [
         'kind' => "TEXT NOT NULL DEFAULT 'other'",
         'make' => "TEXT NOT NULL DEFAULT ''",
@@ -327,6 +328,13 @@ function text_field(string $name, int $max = 4000): string
     if (!is_string($value)) return '';
     $value = preg_replace('/[\x00-\x09\x0B-\x1F\x7F]+/u', '', str_replace("\r\n", "\n", $value)) ?? '';
     return mb_substr(trim($value), 0, $max);
+}
+
+/** A phone number; a box holding only a country code ("+264") counts as empty. */
+function phone_field(string $name = 'phone'): string
+{
+    $phone = field($name, 40);
+    return preg_match('/^\+\d{1,4}$/', $phone) ? '' : $phone;
 }
 
 function email_field(string $name = 'email'): string

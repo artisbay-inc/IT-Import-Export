@@ -35,7 +35,7 @@ switch ($action) {
     case 'signup': {
         $name = field('name', 100);
         $email = email_field();
-        $phone = field('phone', 40);
+        $phone = phone_field();
         $company = field('company', 120);
         $password = (string) (body()['password'] ?? '');
 
@@ -105,7 +105,7 @@ switch ($action) {
         $name = field('name', 100);
         if ($name === '') fail(422, 'Please enter your name.');
         db()->prepare('UPDATE users SET name = ?, phone = ?, company = ?, country = ?, city = ? WHERE id = ?')
-            ->execute([$name, field('phone', 40), field('company', 120), field('country', 80), field('city', 80), $user['id']]);
+            ->execute([$name, phone_field(), field('company', 120), field('country', 80), field('city', 80), $user['id']]);
         log_activity((int) $user['id'], 'Updated their details');
         respond(['user' => public_user(require_user())]);
     }
@@ -174,9 +174,10 @@ switch ($action) {
     case 'quote': {
         $name = field('name', 100);
         $email = email_field();
-        $phone = field('phone', 40);
+        $phone = phone_field();
         $company = field('company', 120);
         $destination = field('destination', 80);
+        $country = field('country', 80);
         $details = text_field('details', 4000);
         if ($name === '') fail(422, 'Please enter your name.');
         if ($phone === '') fail(422, 'Please enter your phone number.');
@@ -192,14 +193,14 @@ switch ($action) {
             $match->execute([$email]);
             $userId = ($id = $match->fetchColumn()) ? (int) $id : null;
         }
-        db()->prepare('INSERT INTO quotes (user_id, name, company, phone, email, destination, details, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
-            ->execute([$userId, $name, $company, $phone, $email, $destination, $details, time()]);
+        db()->prepare('INSERT INTO quotes (user_id, name, company, phone, email, country, destination, details, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
+            ->execute([$userId, $name, $company, $phone, $email, $country, $destination, $details, time()]);
         if ($userId) log_activity($userId, 'Sent a quote request (' . $destination . ')');
 
         $notify = config()['notify_email'] ?? '';
         if ($notify !== '') {
             send_mail($notify, "New quote request from $name",
-                "Name: $name\nCompany: $company\nPhone: $phone\nEmail: $email\nDestination: $destination\n\n$details\n\n"
+                "Name: $name\nCompany: $company\nCountry: $country\nPhone: $phone\nEmail: $email\nDestination: $destination\n\n$details\n\n"
                 . 'See all requests in the admin page: ' . rtrim(config()['site_url'], '/') . '/admin',
                 $email);
         }
@@ -282,7 +283,7 @@ switch ($action) {
             if ($taken->fetchColumn()) fail(409, 'Another account already uses that email.');
         }
         db()->prepare("UPDATE users SET name = ?, email = ?, phone = ?, company = ?, country = ?, city = ? WHERE id = ? AND role = 'customer'")
-            ->execute([$name, $email, field('phone', 40), field('company', 120), field('country', 80), field('city', 80), $id]);
+            ->execute([$name, $email, phone_field(), field('company', 120), field('country', 80), field('city', 80), $id]);
         respond([]);
     }
 
@@ -300,7 +301,7 @@ switch ($action) {
         $now = time();
         // A random password nobody knows: the customer can set their own with "Forgot password".
         db()->prepare("INSERT INTO users (role, name, email, phone, company, country, city, pass, created_at, last_seen) VALUES ('customer', ?, ?, ?, ?, ?, ?, ?, ?, 0)")
-            ->execute([$name, $email !== '' ? $email : placeholder_email(), field('phone', 40), field('company', 120), field('country', 80), field('city', 80),
+            ->execute([$name, $email !== '' ? $email : placeholder_email(), phone_field(), field('company', 120), field('country', 80), field('city', 80),
                 password_hash(bin2hex(random_bytes(24)), PASSWORD_DEFAULT), $now]);
         $id = (int) db()->lastInsertId();
         log_activity($id, 'Added by the admin');
@@ -358,7 +359,7 @@ switch ($action) {
         $taken->execute([$email, $admin['id']]);
         if ($taken->fetchColumn()) fail(409, 'Another account already uses that email.');
         db()->prepare('UPDATE users SET name = ?, email = ?, phone = ? WHERE id = ?')
-            ->execute([$name, $email, field('phone', 40), $admin['id']]);
+            ->execute([$name, $email, phone_field(), $admin['id']]);
         respond(['user' => public_user(require_user())]);
     }
 

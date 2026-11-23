@@ -7,7 +7,7 @@
   <meta name="description" content="Request a customs clearing, freight forwarding, or delivery quote from IT Import & Export CC in Walvis Bay, Namibia." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.v2.css?v=billing3" />
+  <link rel="stylesheet" href="/styles.v2.css?v=billing4" />
   <script>/* Theme before first paint: saved choice, else the system setting. */
   (function(){var t;try{t=localStorage.getItem('iti-theme');}catch(e){}if(t!=='light'&&t!=='dark')t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
@@ -82,13 +82,17 @@
         </div>
         <div class="cl-form-row">
           <div class="cl-form-group">
-            <label for="cl-phone">Phone Number</label>
-            <input id="cl-phone" type="tel" placeholder="+264 81 000 0000" required />
+            <label for="cl-country">Country</label>
+            <select id="cl-country" autocomplete="country-name"></select>
           </div>
           <div class="cl-form-group">
-            <label for="cl-email">Email</label>
-            <input id="cl-email" type="email" placeholder="you@company.com" required />
+            <label for="cl-phone">Phone Number</label>
+            <input id="cl-phone" type="tel" autocomplete="tel" placeholder="+264 81 000 0000" required />
           </div>
+        </div>
+        <div class="cl-form-group">
+          <label for="cl-email">Email</label>
+          <input id="cl-email" type="email" placeholder="you@company.com" required />
         </div>
         <div class="cl-form-group">
           <label for="cl-destination-2">Destination</label>
@@ -124,6 +128,7 @@
     </div>
   </footer>
 
-  <script src="/main.js?v=billing3"></script>
+  <script src="/assets/countries.js?v=billing4"></script>
+  <script src="/main.js?v=billing4"></script>
 </body>
 </html>

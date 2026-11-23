@@ -241,9 +241,20 @@ if (quoteForm) {
     };
     fill("#cl-contact-name", user.name);
     fill("#cl-company", user.company);
-    fill("#cl-phone", user.phone);
     fill("#cl-email", user.email);
+    // A signed-in customer's own country and number replace the Namibia default.
+    if (user.country && countrySelect) ITIE_COUNTRY.setValue(countrySelect, user.country);
+    if (user.phone && phoneOnlyCode()) quoteForm.querySelector("#cl-phone").value = user.phone;
   });
+
+  // Country list: Namibia by default, its dialing code goes into the phone box.
+  const countrySelect = quoteForm.querySelector("#cl-country");
+  const phoneOnlyCode = () => /^(\+\d{1,4})?\s*$/.test(quoteForm.querySelector("#cl-phone").value);
+  if (countrySelect && window.ITIE_COUNTRY) {
+    ITIE_COUNTRY.fill(countrySelect, "Namibia");
+    ITIE_COUNTRY.link(countrySelect, quoteForm.querySelector("#cl-phone"));
+    if (phoneOnlyCode()) quoteForm.querySelector("#cl-phone").value = ITIE_COUNTRY.dialOf("Namibia") + " ";
+  }
 
   quoteForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -257,6 +268,7 @@ if (quoteForm) {
         company: val("#cl-company"),
         phone: val("#cl-phone"),
         email: val("#cl-email"),
+        country: countrySelect ? countrySelect.value : "",
         destination: val("#cl-destination-2"),
         details: val("#cl-details"),
       });

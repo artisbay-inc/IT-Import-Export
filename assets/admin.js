@@ -268,7 +268,7 @@
         mail.href = `mailto:${q.email}`;
         const tel = el("a", "", q.phone);
         tel.href = `tel:${q.phone.replace(/[^\d+]/g, "")}`;
-        meta.append(`${ITIE.dateTime(q.created_at)} · ${q.destination} · `, tel, " · ", mail);
+        meta.append(`${ITIE.dateTime(q.created_at)} · ${q.destination}${q.country ? ` · from ${q.country}` : ""} · `, tel, " · ", mail);
         card.append(top, meta);
         if (q.details) card.append(el("p", "cl-quote-details", q.details));
         const actions = el("div", "cl-quote-actions");

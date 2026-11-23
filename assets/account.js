@@ -79,8 +79,10 @@
   }
 
   // Country dropdowns: picking a country puts its dialing code in the phone box.
-  ITIE_COUNTRY.fill($("#signup-country"));
+  // Most customers are in Namibia: start there, with its code in the phone box.
+  ITIE_COUNTRY.fill($("#signup-country"), "Namibia");
   ITIE_COUNTRY.link($("#signup-country"), $("#signup-phone"));
+  if (!$("#signup-phone").value) $("#signup-phone").value = ITIE_COUNTRY.dialOf("Namibia") + " ";
   ITIE_COUNTRY.fill($("#profile-country"));
   ITIE_COUNTRY.link($("#profile-country"), $("#profile-phone"));
 
